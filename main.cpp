@@ -26,8 +26,10 @@ void CallPacked() {
 
 int main() {
     TVM_REGISTER_GLOBAL("myadd").set_body(MyAdd);
-    PackedFunc myadd = PackedFunc(MyAdd);
-    int c = myadd(1, 2);
+//    PackedFunc myadd = PackedFunc(MyAdd);
+//    int c = myadd(1, 2);
+    const PackedFunc *myadd = tvm::runtime::Registry::Get("myadd");
+    int c = (*myadd)(1, 3);
     std::cout << "myadd = " << c << std::endl;
     const std::string func_name = "runtime.DumpTypeTable";
     const PackedFunc *fp = tvm::runtime::Registry::Get(func_name);
@@ -35,7 +37,7 @@ int main() {
     (*fp)(0);
 
     std::cout << "\nList all registered global function:\n";
-    for (const auto& name : tvm::runtime::Registry::ListNames()) {
+    for (const auto &name: tvm::runtime::Registry::ListNames()) {
         std::cout << name << std::endl;
     }
     return 0;
