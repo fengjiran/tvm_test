@@ -1,4 +1,4 @@
-//#include <iostream>
+#include <iostream>
 #include <string>
 #include "tvm/runtime/memory.h"
 #include "tvm/runtime/object.h"
@@ -30,9 +30,13 @@ int main() {
     int c = myadd(1, 2);
     std::cout << "myadd = " << c << std::endl;
     const std::string func_name = "runtime.DumpTypeTable";
-//    const std::string func_name = "myadd";
     const PackedFunc *fp = tvm::runtime::Registry::Get(func_name);
     ICHECK(fp != nullptr);
     (*fp)(0);
+
+    std::cout << "\nList all registered global function:\n";
+    for (const auto& name : tvm::runtime::Registry::ListNames()) {
+        std::cout << name << std::endl;
+    }
     return 0;
 }
