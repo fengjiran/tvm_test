@@ -18,7 +18,7 @@ ELSEIF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
             /Users/richard/Desktop/tvm/3rdparty/dlpack/include
             /Users/richard/Desktop/tvm/3rdparty/dmlc-core/include)
     add_executable(${PROJECT_NAME} main.cpp)
-    target_link_libraries(${PROJECT_NAME} /Users/richard/Desktop/tvm/cmake-build-debug/libtvm_runtime.dylib)
+    target_link_libraries(${PROJECT_NAME} /Users/richard/Desktop/tvm/build/libtvm_runtime.dylib)
 ELSE ()
     MESSAGE(STATUS "other platform: ${CMAKE_SYSTEM_NAME}")
 ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
