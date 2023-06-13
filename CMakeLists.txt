@@ -1,24 +1,22 @@
 cmake_minimum_required(VERSION 3.22)
 project(tvm_test)
-
 set(CMAKE_CXX_STANDARD 17)
 
 IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
-    MESSAGE(STATUS "current platform: Linux ")
-    include_directories(/home/richard/project/tvm/include
-            /home/richard/project/tvm/3rdparty/dlpack/include
-            /home/richard/project/tvm/3rdparty/dmlc-core/include)
-    add_executable(${PROJECT_NAME} main.cpp)
-    target_link_libraries(${PROJECT_NAME} /home/richard/project/tvm/build/libtvm_runtime.so)
-ELSEIF (CMAKE_SYSTEM_NAME MATCHES "Windows")
-    MESSAGE(STATUS "current platform: Windows")
+    message(STATUS "Current Platform: Linux ")
+    set(OPENXAE_INCLUDE /home/richard/project/openXAE/include)
+    set(OPENXAE_DLL /home/richard/project/openXAE/build/libopenXAE.so)
 ELSEIF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
-    MESSAGE(STATUS "current platform: Mac OS")
-    include_directories(/Users/richard/Desktop/tvm/include
-            /Users/richard/Desktop/tvm/3rdparty/dlpack/include
-            /Users/richard/Desktop/tvm/3rdparty/dmlc-core/include)
-    add_executable(${PROJECT_NAME} main.cpp)
-    target_link_libraries(${PROJECT_NAME} /Users/richard/Desktop/tvm/build/libtvm_runtime.dylib)
+    message(STATUS "Current Platform: MacOS")
+    set(OPENXAE_INCLUDE /Users/richard/Desktop/openXAE/include)
+    set(OPENXAE_DLL /Users/richard/Desktop/openXAE/build/libopenXAE.so)
 ELSE ()
-    MESSAGE(STATUS "other platform: ${CMAKE_SYSTEM_NAME}")
+    message(STATUS "Other Platform: ${CMAKE_SYSTEM_NAME}")
 ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+
+message(STATUS "openXAE include path: " ${OPENXAE_INCLUDE})
+message(STATUS "openXAE DLL path: " ${OPENXAE_DLL})
+
+include_directories(${OPENXAE_INCLUDE})
+add_executable(${PROJECT_NAME} main.cpp)
+target_link_libraries(${PROJECT_NAME} ${OPENXAE_DLL})
