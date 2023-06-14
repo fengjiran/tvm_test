@@ -132,3 +132,4 @@ dmypy.json
 .idea/
 .pkl_memoize_py3/
 cmake-build-debug/
+.DS_Store
