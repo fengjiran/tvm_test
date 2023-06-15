@@ -1,6 +1,7 @@
 #include "library.h"
 
-int main() {
+int main()
+{
     ListTypeTable();
     ListGlobalFuncNames();
     test_toy_add(1, 4);
