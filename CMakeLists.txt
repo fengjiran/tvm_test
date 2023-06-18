@@ -18,7 +18,6 @@ message(STATUS "openXAE include path: " ${OPENXAE_INCLUDE})
 message(STATUS "openXAE DLL path: " ${OPENXAE_DLL})
 
 file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
-message(STATUS ${SRC_FILES})
 
 include_directories(${OPENXAE_INCLUDE})
 add_executable(${PROJECT_NAME} ${SRC_FILES})
