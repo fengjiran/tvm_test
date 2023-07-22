@@ -1,4 +1,4 @@
-#include "library.h"
+#include "test_packedfunc.h"
 
 int main() {
     ListTypeTable();
