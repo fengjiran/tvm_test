@@ -30,8 +30,9 @@ TVM_REGISTER_GLOBAL("toy_sub").set_body([](TVMArgs args, TVMRetValue *rv) -> voi
 
 void test_toy_add(float a, float b) {
     const char *fname = "toy_add";
-//    void* fp1;
+//    TVMFunctionHandle fp1;
 //    TVMFuncGetGlobal(fname, &fp1);
+
     const PackedFunc *fp = Registry::Get(fname);
     ICHECK(fp != nullptr);
     double res = (*fp)(a, b);
@@ -40,7 +41,7 @@ void test_toy_add(float a, float b) {
 }
 
 void test_toy_sub(float a, float b) {
-    String fname = "toy_sub";
+    const char* fname = "toy_sub";
     const PackedFunc *fp = Registry::Get(fname);
     ICHECK(fp != nullptr);
     double res = (*fp)(a, b);
@@ -50,7 +51,7 @@ void test_toy_sub(float a, float b) {
 void ListGlobalFuncNames() {
     int global_func_num;
     const char **plist;
-    int call_ecode = TVMFuncListGlobalNames(&global_func_num, &plist);
+    TVMFuncListGlobalNames(&global_func_num, &plist);
 
     LOG_INFO << "List all " << global_func_num << " global functions:";
     for (int i = 0; i < global_func_num; i++) {
