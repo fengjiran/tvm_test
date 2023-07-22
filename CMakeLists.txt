@@ -25,6 +25,8 @@ ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
 message(STATUS "openXAE include path: " ${OPENXAE_INCLUDE})
 message(STATUS "openXAE DLL path: " ${OPENXAE_DLL})
 
+file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+
 include_directories(${OPENXAE_INCLUDE})
-add_executable(${PROJECT_NAME} main.cpp test_packedfunc.cpp test_packedfunc.h)
+add_executable(${PROJECT_NAME} ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME} ${OPENXAE_DLL})
