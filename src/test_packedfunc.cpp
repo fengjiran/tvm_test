@@ -5,8 +5,9 @@
 #include "test_packedfunc.h"
 #include <iostream>
 #include "tvm/runtime/registry.h"
+#include "tvm/runtime/c_runtime_api.h"
 
-using namespace tvm;
+//using namespace tvm;
 using namespace tvm::runtime;
 
 template<typename T>
