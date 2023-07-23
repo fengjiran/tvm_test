@@ -42,7 +42,7 @@ void test_toy_add(float a, float b) {
 }
 
 void test_toy_sub(float a, float b) {
-    const char* fname = "toy_sub";
+    const char *fname = "toy_sub";
     const PackedFunc *fp = Registry::Get(fname);
     ICHECK(fp != nullptr);
     double res = (*fp)(a, b);
