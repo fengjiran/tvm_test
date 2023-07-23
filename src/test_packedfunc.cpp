@@ -61,7 +61,7 @@ void ListGlobalFuncNames() {
 }
 
 void ListTypeTable() {
-    String fname = "runtime.DumpTypeTable";
+    const char *fname = "runtime.DumpTypeTable";
     const PackedFunc *fp = Registry::Get(fname);
     ICHECK(fp != nullptr);
     (*fp)(0);
