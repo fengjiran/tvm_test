@@ -16,7 +16,6 @@ void random_matrix(int32_t *matrix, int rows, int cols) {
     std::uniform_int_distribution<int32_t> dist(0, 20);
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-//            matrix[i * cols + j] = (int32_t)mrand48();
             matrix[i * cols + j] = dist(gen);
         }
     }
@@ -41,6 +40,8 @@ void test_constant() {
         }
         std::cout << std::endl;
     }
+
+    DLTensor tet {matrix};
 
     delete[] matrix;
 
