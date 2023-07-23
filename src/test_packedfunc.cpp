@@ -32,12 +32,13 @@ void test_toy_add(float a, float b) {
     const char *fname = "toy_add";
 //    TVMFunctionHandle fp1;
 //    TVMFuncGetGlobal(fname, &fp1);
-
+//    auto *fp2 = static_cast<PackedFunc*>(fp1);
+//    double res = (*fp2)(a, b);
+//    LOG_INFO << "Result: " << res;
     const PackedFunc *fp = Registry::Get(fname);
     ICHECK(fp != nullptr);
     double res = (*fp)(a, b);
     LOG_INFO << "Result: " << res;
-
 }
 
 void test_toy_sub(float a, float b) {
