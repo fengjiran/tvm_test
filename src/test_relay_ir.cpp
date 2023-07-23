@@ -53,12 +53,17 @@ void test_constant() {
     tensor.strides = nullptr;
     tensor.byte_offset = 0;
     tensor.device = DLDevice{kDLCPU, 0};
+    size_t mod = reinterpret_cast<size_t>(static_cast<char*>(tensor.data) + tensor.byte_offset) % 64;
+    std::cout << "the mod: " << mod << std::endl;
     NDArray x = NDArray::FromExternalDLTensor(tensor);
 
     const char *name = "relay.ir.Constant";
     const PackedFunc *fp = Registry::Get(name);
+    Constant const1 = (*fp)(x, Span());
+    Constant const2(x);
 
-    Constant constant = (*fp)(x, Span());
+    std::cout << "const1 dim: " << const1->data->ndim << std::endl;
+    std::cout << "const2 dim: " << const2->data->ndim << std::endl;
 
     delete[] data;
 }
