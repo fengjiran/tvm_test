@@ -9,6 +9,7 @@
 
 #include "tvm/relay/expr.h"
 #include "tvm/runtime/registry.h"
+#include "tvm/runtime/device_api.h"
 
 using namespace tvm::runtime;
 using namespace tvm::relay;
@@ -52,10 +53,10 @@ void test_constant() {
     tensor.shape = const_cast<ShapeTuple::index_type *>(shape.data());
     tensor.dtype = DLDataType{kDLInt, 64, 1};
     tensor.strides = nullptr;
-    tensor.byte_offset = 32;
+    tensor.byte_offset = kAllocAlignment - reinterpret_cast<size_t>(static_cast<char*>(tensor.data)) % kAllocAlignment;
     tensor.device = DLDevice{kDLCPU, 0};
-//    size_t mod = reinterpret_cast<size_t>(static_cast<char*>(tensor.data) + tensor.byte_offset) % 64;
-//    std::cout << "the mod: " << mod << std::endl;
+    size_t mod = reinterpret_cast<size_t>(static_cast<char*>(tensor.data) + tensor.byte_offset) % kAllocAlignment;
+    std::cout << "the mod: " << mod << std::endl;
     NDArray x = NDArray::FromExternalDLTensor(tensor);
 
     const char *name = "relay.ir.Constant";
@@ -67,4 +68,13 @@ void test_constant() {
     std::cout << "const2 dim: " << const2->data->ndim << std::endl;
 
     delete[] data;
+}
+
+void ListAllOpNames() {
+    const char *name = "ir.ListOpNames";
+    const PackedFunc *fp = Registry::Get(name);
+    Array<String> op_names = (*fp)();
+    for (const auto &item: op_names) {
+        std::cout << item << std::endl;
+    }
 }

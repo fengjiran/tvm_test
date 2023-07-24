@@ -7,4 +7,6 @@
 
 void test_constant();
 
+void ListAllOpNames();
+
 #endif //TVM_TEST_TEST_RELAY_IR_H
