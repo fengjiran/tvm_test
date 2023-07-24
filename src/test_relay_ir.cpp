@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "tvm/relay/expr.h"
+#include "tvm/relay/op.h"
 #include "tvm/runtime/registry.h"
 #include "tvm/runtime/device_api.h"
 
@@ -17,7 +18,7 @@ using namespace tvm::relay;
 void random_matrix(int64_t *matrix, int rows, int cols) {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<int64_t> dist(0, 20);
+    std::uniform_int_distribution<int64_t> dist(-20, 20);
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             matrix[i * cols + j] = dist(gen);
@@ -55,18 +56,20 @@ void test_constant() {
     tensor.strides = nullptr;
     tensor.byte_offset = kAllocAlignment - reinterpret_cast<size_t>(static_cast<char*>(tensor.data)) % kAllocAlignment;
     tensor.device = DLDevice{kDLCPU, 0};
-    size_t mod = reinterpret_cast<size_t>(static_cast<char*>(tensor.data) + tensor.byte_offset) % kAllocAlignment;
-    std::cout << "the mod: " << mod << std::endl;
+//    size_t mod = reinterpret_cast<size_t>(static_cast<char*>(tensor.data) + tensor.byte_offset) % kAllocAlignment;
+//    std::cout << "the mod: " << mod << std::endl;
     NDArray x = NDArray::FromExternalDLTensor(tensor);
 
     const char *name = "relay.ir.Constant";
     const PackedFunc *fp = Registry::Get(name);
     Constant const1 = (*fp)(x, Span());
-    Constant const2(x);
 
-    std::cout << "const1 dim: " << const1->data->ndim << std::endl;
-    std::cout << "const2 dim: " << const2->data->ndim << std::endl;
-
+    const char* relu_name = "relay.op.nn._make.relu";
+    const PackedFunc *relu_pf = Registry::Get(relu_name);
+    Call call_relu1 = (*relu_pf)(const1);
+    Call call_relu2 = (*relu_pf)(const1);
+    std::cout << "relu1 op addr: " << &call_relu1->op << std::endl;
+    std::cout << "relu2 op addr: " << &call_relu2->op << std::endl;
     delete[] data;
 }
 
@@ -74,6 +77,7 @@ void ListAllOpNames() {
     const char *name = "ir.ListOpNames";
     const PackedFunc *fp = Registry::Get(name);
     Array<String> op_names = (*fp)();
+    LOG_INFO << "List all " << op_names.size() << " ops:";
     for (const auto &item: op_names) {
         std::cout << item << std::endl;
     }
