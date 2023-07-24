@@ -35,6 +35,7 @@ void test_constant() {
 
     int rows = 4;
     int cols = 3;
+//    posix_memalign();
     auto *data = new int64_t[rows * cols];
     random_matrix(data, rows, cols);
     for (int i = 0; i < rows; i++) {
@@ -51,10 +52,10 @@ void test_constant() {
     tensor.shape = const_cast<ShapeTuple::index_type *>(shape.data());
     tensor.dtype = DLDataType{kDLInt, 64, 1};
     tensor.strides = nullptr;
-    tensor.byte_offset = 0;
+    tensor.byte_offset = 32;
     tensor.device = DLDevice{kDLCPU, 0};
-    size_t mod = reinterpret_cast<size_t>(static_cast<char*>(tensor.data) + tensor.byte_offset) % 64;
-    std::cout << "the mod: " << mod << std::endl;
+//    size_t mod = reinterpret_cast<size_t>(static_cast<char*>(tensor.data) + tensor.byte_offset) % 64;
+//    std::cout << "the mod: " << mod << std::endl;
     NDArray x = NDArray::FromExternalDLTensor(tensor);
 
     const char *name = "relay.ir.Constant";
