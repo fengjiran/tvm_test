@@ -15,10 +15,10 @@
 using namespace tvm::runtime;
 using namespace tvm::relay;
 
-void random_matrix(int64_t *matrix, int rows, int cols) {
+void random_matrix(int32_t *matrix, int rows, int cols) {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<int64_t> dist(-20, 20);
+    std::uniform_int_distribution<int32_t> dist(-20, 20);
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             matrix[i * cols + j] = dist(gen);
@@ -38,8 +38,10 @@ void test_constant() {
     int rows = 4;
     int cols = 3;
 //    posix_memalign();
-    auto *data = new int64_t[rows * cols];
+    auto *data = new int32_t[rows * cols];
     random_matrix(data, rows, cols);
+
+    std::cout << "the original data:\n";
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             std::cout << data[i * cols + j] << " ";
@@ -52,7 +54,7 @@ void test_constant() {
     tensor.data = data;
     tensor.ndim = static_cast<int>(shape.size());
     tensor.shape = const_cast<ShapeTuple::index_type *>(shape.data());
-    tensor.dtype = DLDataType{kDLInt, 64, 1};
+    tensor.dtype = DLDataType{kDLInt, 32, 1};
     tensor.strides = nullptr;
     tensor.byte_offset = kAllocAlignment - reinterpret_cast<size_t>(static_cast<char*>(tensor.data)) % kAllocAlignment;
     tensor.device = DLDevice{kDLCPU, 0};
@@ -63,6 +65,14 @@ void test_constant() {
     const char *name = "relay.ir.Constant";
     const PackedFunc *fp = Registry::Get(name);
     Constant const1 = (*fp)(x, Span());
+
+    std::cout << "the constant data:\n";
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            std::cout << static_cast<int32_t*>(const1->data->data)[i * cols + j] << " ";
+        }
+        std::cout << std::endl;
+    }
 
     const char* relu_name = "relay.op.nn._make.relu";
     const PackedFunc *relu_pf = Registry::Get(relu_name);
