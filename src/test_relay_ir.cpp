@@ -56,7 +56,7 @@ void test_constant() {
     tensor.shape = const_cast<ShapeTuple::index_type *>(shape.data());
     tensor.dtype = DLDataType{kDLInt, 32, 1};
     tensor.strides = nullptr;
-    tensor.byte_offset = kAllocAlignment - reinterpret_cast<size_t>(static_cast<char*>(tensor.data)) % kAllocAlignment;
+    tensor.byte_offset = kAllocAlignment - reinterpret_cast<size_t>(static_cast<char *>(tensor.data)) % kAllocAlignment;
     tensor.device = DLDevice{kDLCPU, 0};
 //    size_t mod = reinterpret_cast<size_t>(static_cast<char*>(tensor.data) + tensor.byte_offset) % kAllocAlignment;
 //    std::cout << "the mod: " << mod << std::endl;
@@ -69,12 +69,12 @@ void test_constant() {
     std::cout << "the constant data:\n";
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            std::cout << static_cast<int32_t*>(const1->data->data)[i * cols + j] << " ";
+            std::cout << static_cast<int32_t *>(const1->data->data)[i * cols + j] << " ";
         }
         std::cout << std::endl;
     }
 
-    const char* relu_name = "relay.op.nn._make.relu";
+    const char *relu_name = "relay.op.nn._make.relu";
     const PackedFunc *relu_pf = Registry::Get(relu_name);
     Call call_relu1 = (*relu_pf)(const1);
     Call call_relu2 = (*relu_pf)(const1);
