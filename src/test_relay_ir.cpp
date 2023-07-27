@@ -62,8 +62,7 @@ void test_constant() {
 //    std::cout << "the mod: " << mod << std::endl;
     NDArray x = NDArray::FromExternalDLTensor(tensor);
 
-    const char *name = "relay.ir.Constant";
-    const PackedFunc *fp = Registry::Get(name);
+    const PackedFunc *fp = Registry::Get("relay.ir.Constant");
     Constant const1 = (*fp)(x, Span());
 
     std::cout << "the constant data:\n";
@@ -74,8 +73,7 @@ void test_constant() {
         std::cout << std::endl;
     }
 
-    const char *relu_name = "relay.op.nn._make.relu";
-    const PackedFunc *relu_pf = Registry::Get(relu_name);
+    const PackedFunc *relu_pf = Registry::Get("relay.op.nn._make.relu");
     Call call_relu1 = (*relu_pf)(const1);
     Call call_relu2 = (*relu_pf)(const1);
     std::cout << "relu1 op addr: " << &call_relu1->op << std::endl;
@@ -84,8 +82,7 @@ void test_constant() {
 }
 
 void ListAllOpNames() {
-    const char *name = "ir.ListOpNames";
-    const PackedFunc *fp = Registry::Get(name);
+    const PackedFunc *fp = Registry::Get("ir.ListOpNames");
     Array<String> op_names = (*fp)();
     LOG_INFO << "List all " << op_names.size() << " ops:";
     for (const auto &item: op_names) {
