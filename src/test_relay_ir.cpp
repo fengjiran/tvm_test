@@ -27,17 +27,8 @@ void random_matrix(int32_t *matrix, int rows, int cols) {
 }
 
 void test_constant() {
-    //    const char *name = "relay.ir.Constant";
-    //    const PackedFunc *fp = Registry::Get(name);
-    //    NDArray xx = NDArray::Empty(
-    //            {4, 3},
-    //            DLDataType{kDLFloat, 32, 1},
-    //            DLDevice{kDLCPU, 0}
-    //    );
-
     int rows = 4;
     int cols = 3;
-//    posix_memalign();
     auto *data = new int32_t[rows * cols];
     random_matrix(data, rows, cols);
 
