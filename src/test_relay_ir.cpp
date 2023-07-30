@@ -50,7 +50,6 @@ Constant generate_constant_node(int rows, int cols) {
 //    size_t mod = reinterpret_cast<size_t>(static_cast<char*>(tensor.data) + tensor.byte_offset) % kAllocAlignment;
 //    std::cout << "the mod: " << mod << std::endl;
     NDArray x = NDArray::FromExternalDLTensor(tensor);
-
     const PackedFunc *fp = Registry::Get("relay.ir.Constant");
     Constant const1 = (*fp)(x, Span());
 
@@ -76,7 +75,7 @@ void test_constant() {
     Call call_relu2 = (*relu_pf)(const1);
     std::cout << "relu1 op addr: " << &call_relu1->op << std::endl;
     std::cout << "relu2 op addr: " << &call_relu2->op << std::endl;
-//    delete[] data;
+    delete[] static_cast<int32_t *>(const1->data->data);
 }
 
 void ListAllOpNames() {
