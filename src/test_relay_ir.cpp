@@ -57,9 +57,9 @@ Constant generate_constant_node(int rows, int cols, DataType dtype) {
     NDArray x = NDArray::FromExternalDLTensor(tensor);
 //    const PackedFunc *fp = Registry::Get("relay.ir.Constant");
 //    Constant const1 = (*fp)(x, Span());
-    Constant const2(x, Span());
+//    Constant const2(x, Span());
 
-    return const2;
+    return Constant(x, Span());
 }
 
 void test_constant_expr() {
