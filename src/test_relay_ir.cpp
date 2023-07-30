@@ -26,9 +26,7 @@ void random_matrix(int32_t *matrix, int rows, int cols) {
     }
 }
 
-void test_constant() {
-    int rows = 4;
-    int cols = 3;
+Constant generate_constant_node(int rows, int cols) {
     auto *data = new int32_t[rows * cols];
     random_matrix(data, rows, cols);
 
@@ -56,6 +54,15 @@ void test_constant() {
     const PackedFunc *fp = Registry::Get("relay.ir.Constant");
     Constant const1 = (*fp)(x, Span());
 
+    return const1;
+}
+
+void test_constant() {
+    int rows = 4;
+    int cols = 3;
+
+    Constant const1 = generate_constant_node(rows, cols);
+
     std::cout << "the constant data:\n";
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
@@ -69,7 +76,7 @@ void test_constant() {
     Call call_relu2 = (*relu_pf)(const1);
     std::cout << "relu1 op addr: " << &call_relu1->op << std::endl;
     std::cout << "relu2 op addr: " << &call_relu2->op << std::endl;
-    delete[] data;
+//    delete[] data;
 }
 
 void ListAllOpNames() {
