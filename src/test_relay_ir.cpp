@@ -52,11 +52,12 @@ Constant generate_constant_node(int rows, int cols) {
     NDArray x = NDArray::FromExternalDLTensor(tensor);
     const PackedFunc *fp = Registry::Get("relay.ir.Constant");
     Constant const1 = (*fp)(x, Span());
+    Constant const2(x, Span());
 
-    return const1;
+    return const2;
 }
 
-void test_constant() {
+void test_constant_expr() {
     int rows = 4;
     int cols = 3;
 
@@ -76,6 +77,11 @@ void test_constant() {
     std::cout << "relu1 op addr: " << &call_relu1->op << std::endl;
     std::cout << "relu2 op addr: " << &call_relu2->op << std::endl;
     delete[] static_cast<int32_t *>(const1->data->data);
+}
+
+void test_let_expr() {
+    const PackedFunc *fp = Registry::Get("relay.ir.Let");
+
 }
 
 void ListAllOpNames() {

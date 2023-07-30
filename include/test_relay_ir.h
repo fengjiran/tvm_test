@@ -9,7 +9,7 @@
 
 tvm::relay::Constant generate_constant_node(int rows, int cols);
 
-void test_constant();
+void test_constant_expr();
 
 void ListAllOpNames();
 
