@@ -7,7 +7,7 @@
 
 #include "tvm/relay/expr.h"
 
-tvm::relay::Constant generate_constant_node(int rows, int cols);
+tvm::relay::Constant generate_constant_node(int rows, int cols, tvm::DataType dtype);
 
 void test_constant_expr();
 
