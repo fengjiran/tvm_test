@@ -55,8 +55,8 @@ Constant generate_constant_node(int rows, int cols, DataType dtype) {
     //    size_t mod = reinterpret_cast<size_t>(static_cast<char*>(tensor.data) + tensor.byte_offset) % kAllocAlignment;
     //    std::cout << "the mod: " << mod << std::endl;
     NDArray x = NDArray::FromExternalDLTensor(tensor);
-    const PackedFunc *fp = Registry::Get("relay.ir.Constant");
-    Constant const1 = (*fp)(x, Span());
+//    const PackedFunc *fp = Registry::Get("relay.ir.Constant");
+//    Constant const1 = (*fp)(x, Span());
     Constant const2(x, Span());
 
     return const2;
