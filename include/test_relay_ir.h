@@ -5,6 +5,10 @@
 #ifndef TVM_TEST_TEST_RELAY_IR_H
 #define TVM_TEST_TEST_RELAY_IR_H
 
+#include "tvm/relay/expr.h"
+
+tvm::relay::Constant generate_constant_node(int rows, int cols);
+
 void test_constant();
 
 void ListAllOpNames();
