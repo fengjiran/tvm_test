@@ -6,6 +6,7 @@
 
 #include <random>
 #include <vector>
+#include <gtest/gtest.h>
 
 #include "tvm/relay/expr.h"
 #include "tvm/relay/op.h"
@@ -32,7 +33,7 @@ void random_matrix(T *matrix, int rows, int cols) {
 
 Constant generate_constant_node(int rows, int cols, DataType dtype) {
     ICHECK(dtype.is_int()) << "This data type is not supported now.";
-    auto* data = new int32_t [rows * cols];
+    auto *data = new int32_t[rows * cols];
     random_matrix<int32_t>(data, rows, cols);
 
     std::cout << "the original data:\n";
