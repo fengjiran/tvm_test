@@ -8,7 +8,6 @@
 #include "tvm/runtime/registry.h"
 #include "tvm/runtime/c_runtime_api.h"
 
-//using namespace tvm;
 using namespace tvm::runtime;
 
 template<typename T>
@@ -31,30 +30,20 @@ TVM_REGISTER_GLOBAL("toy_sub").set_body([](TVMArgs args, TVMRetValue *rv) -> voi
 
 TEST(PackedFunc, toy_add) {
     const PackedFunc *fp = Registry::Get("toy_add");
-    double res = (*fp)(1, 4);
-
-    EXPECT_EQ(5, res);
+    EXPECT_NE(fp, nullptr);
+    double a = 1.5;
+    double b = 4.1;
+    double res = (*fp)(a, b);
+    EXPECT_DOUBLE_EQ(res, a + b);
 }
 
-void test_toy_add(float a, float b) {
-    const char *fname = "toy_add";
-//    TVMFunctionHandle fp1;
-//    TVMFuncGetGlobal(fname, &fp1);
-//    auto *fp2 = static_cast<PackedFunc*>(fp1);
-//    double res = (*fp2)(a, b);
-//    LOG_INFO << "Result: " << res;
-    const PackedFunc *fp = Registry::Get(fname);
-    ICHECK(fp != nullptr);
+TEST(PackedFunc, toy_sub) {
+    const PackedFunc *fp = Registry::Get("toy_sub");
+    EXPECT_NE(fp, nullptr);
+    double a = 1.5;
+    double b = 4.1;
     double res = (*fp)(a, b);
-    LOG_INFO << "Result: " << res;
-}
-
-void test_toy_sub(float a, float b) {
-    const char *fname = "toy_sub";
-    const PackedFunc *fp = Registry::Get(fname);
-    ICHECK(fp != nullptr);
-    double res = (*fp)(a, b);
-    LOG_INFO << "Result: " << res;
+    EXPECT_DOUBLE_EQ(res, a - b);
 }
 
 void ListGlobalFuncNames() {
