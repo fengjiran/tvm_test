@@ -34,4 +34,4 @@ include_directories(
         ${DMLC_INCLUDE}
         )
 
-target_link_libraries(${PROJECT_NAME} ${TVM_DLL} gtest gtest_main pthread)
+target_link_libraries(${PROJECT_NAME} ${TVM_DLL} gtest pthread)
