@@ -5,8 +5,8 @@
 #ifndef TVM_TEST_TEST_PACKEDFUNC_H
 #define TVM_TEST_TEST_PACKEDFUNC_H
 
-void ListGlobalFuncNames();
+//void ListGlobalFuncNames();
 
-void ListTypeTable();
+//void ListTypeTable();
 
 #endif//TVM_TEST_TEST_PACKEDFUNC_H

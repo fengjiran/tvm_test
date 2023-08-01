@@ -11,6 +11,4 @@ tvm::relay::Constant generate_constant_node(int rows, int cols, tvm::DataType dt
 
 void test_constant_expr();
 
-void ListAllOpNames();
-
 #endif //TVM_TEST_TEST_RELAY_IR_H

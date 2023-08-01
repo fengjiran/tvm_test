@@ -46,20 +46,21 @@ TEST(PackedFunc, toy_sub) {
     EXPECT_DOUBLE_EQ(res, a - b);
 }
 
-void ListGlobalFuncNames() {
+TEST(PackedFunc, ListGlobalFuncNames) {
+    GTEST_SKIP();
     int global_func_num;
     const char **plist;
-    TVMFuncListGlobalNames(&global_func_num, &plist);
+    EXPECT_EQ(TVMFuncListGlobalNames(&global_func_num, &plist), 0);
 
-    LOG_INFO << "List all " << global_func_num << " global functions:";
+    LOG_INFO << "global function num: " << global_func_num;
     for (int i = 0; i < global_func_num; i++) {
         std::cout << plist[i] << std::endl;
     }
 }
 
-void ListTypeTable() {
-    const char *fname = "runtime.DumpTypeTable";
-    const PackedFunc *fp = Registry::Get(fname);
+TEST(PackedFunc, ListTypeTable) {
+    GTEST_SKIP();
+    const PackedFunc *fp = Registry::Get("runtime.DumpTypeTable");
     ICHECK(fp != nullptr);
     (*fp)(0);
 }
