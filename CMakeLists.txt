@@ -13,7 +13,9 @@ ELSEIF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
     set(TVM_INCLUDE /Users/richard/Desktop/tvm/include)
     set(DLPACK_INCLUDE /Users/richard/Desktop/tvm/3rdparty/dlpack/include)
     set(DMLC_INCLUDE /Users/richard/Desktop/tvm/3rdparty/dmlc-core/include)
-    set(TVM_DLL /Users/richard/Desktop/tvm/build/libtvm.dylib)
+    set(TVM_LIB /Users/richard/Desktop/tvm/build/libtvm.dylib)
+    set(GTEST_INCLUDE /Users/richard/Desktop/googletest/googletest/include)
+    set(GTEST_LIB /Users/richard/Desktop/googletest/build/lib/libgtest.a)
 ELSE ()
     message(STATUS "Other Platform: ${CMAKE_SYSTEM_NAME}")
 ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -21,7 +23,7 @@ ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
 message(STATUS "TVM include path: " ${TVM_INCLUDE})
 message(STATUS "DLPACK include path: " ${DLPACK_INCLUDE})
 message(STATUS "DMLC include path: " ${DMLC_INCLUDE})
-message(STATUS "TVM runtime DLL path: " ${TVM_RUNTIME_DLL})
+message(STATUS "TVM LIB path: " ${TVM_LIB})
 
 file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
@@ -32,6 +34,7 @@ include_directories(
         ${TVM_INCLUDE}
         ${DLPACK_INCLUDE}
         ${DMLC_INCLUDE}
+        ${GTEST_INCLUDE}
         )
 
-target_link_libraries(${PROJECT_NAME} ${TVM_DLL} gtest pthread)
+target_link_libraries(${PROJECT_NAME} ${TVM_LIB} ${GTEST_LIB} pthread)
