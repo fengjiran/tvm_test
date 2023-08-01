@@ -2,13 +2,14 @@
 // Created by 赵丹 on 2023/7/22.
 //
 
-#include "test_packedfunc.h"
 #include <iostream>
 #include <gtest/gtest.h>
 #include "tvm/runtime/registry.h"
 #include "tvm/runtime/c_runtime_api.h"
+#include "tvm/tir/expr.h"
 
 using namespace tvm::runtime;
+using namespace tvm::tir;
 
 template<typename T>
 inline T toy_add(T a, T b) {
@@ -63,4 +64,24 @@ TEST(PackedFunc, ListTypeTable) {
     const PackedFunc *fp = Registry::Get("runtime.DumpTypeTable");
     ICHECK(fp != nullptr);
     (*fp)(0);
+}
+
+TEST(PackedFunc, Basic) {
+    int x = 0;
+    void *handle = &x;
+    DLTensor a;
+
+    auto func = [&](TVMArgs args, TVMRetValue *rv) -> void {
+        ICHECK(args.num_args == 3);
+        ICHECK(args.values[0].v_float64 == 1.0);
+        ICHECK(args.type_codes[0] == kDLFloat);
+        ICHECK(args.values[1].v_handle == &a);
+        ICHECK(args.type_codes[1] == kTVMDLTensorHandle);
+        ICHECK(args.values[2].v_handle == &x);
+        ICHECK(args.type_codes[2] == kTVMOpaqueHandle);
+        *rv = Var("a");
+    };
+
+    Var v = PackedFunc(func)(1.0, &a, handle);
+    ICHECK(v->name_hint == "a");
 }
