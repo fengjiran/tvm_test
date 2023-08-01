@@ -33,11 +33,16 @@ void random_matrix(T *matrix, int rows, int cols) {
     }
 }
 
-void string_to_file(const std::string& file_name, const std::string& str) {
+int string_to_file(const std::string& file_name, const std::string& str) {
     std::ofstream outfile;
     outfile.open(file_name);
-    outfile << str;
+    if (!outfile.is_open()) {
+        std::cout << "Open file failed!\n";
+        return -1;
+    }
+    outfile << str << std::endl;
     outfile.close();
+    return 0;
 }
 
 Constant generate_constant_node(int rows, int cols, DataType dtype) {
@@ -128,8 +133,8 @@ TEST(Relay, PrintGraph) {
         }
         relay::Function foo = relay::Function({}, y1, relay::Type(), {});
         std::string result = AsText(foo);
-        ASSERT_GT(0, result.size());
         string_to_file("relay_graph.txt", result);
+        ASSERT_GT(0, result.size());
     };
     ASSERT_EXIT((func(), exit(0)), testing::ExitedWithCode(0), ".*");
 }
