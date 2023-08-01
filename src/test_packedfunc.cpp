@@ -29,12 +29,11 @@ TVM_REGISTER_GLOBAL("toy_sub").set_body([](TVMArgs args, TVMRetValue *rv) -> voi
     *rv = toy_sub<double>(args[0], args[1]);
 });
 
-TEST(PackedFunc, toy_add
-) {
-const PackedFunc *fp = Registry::Get("toy_add");
-double res = (*fp)(1, 4);
+TEST(PackedFunc, toy_add) {
+    const PackedFunc *fp = Registry::Get("toy_add");
+    double res = (*fp)(1, 4);
 
-EXPECT_EQ(5, res);
+    EXPECT_EQ(5, res);
 }
 
 void test_toy_add(float a, float b) {
