@@ -23,8 +23,6 @@ message(STATUS "DLPACK include path: " ${DLPACK_INCLUDE})
 message(STATUS "DMLC include path: " ${DMLC_INCLUDE})
 message(STATUS "TVM runtime DLL path: " ${TVM_RUNTIME_DLL})
 
-find_package(GTest CONFIG REQUIRED)
-
 file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
@@ -36,4 +34,4 @@ include_directories(
         ${DMLC_INCLUDE}
         )
 
-target_link_libraries(${PROJECT_NAME} ${TVM_DLL})
+target_link_libraries(${PROJECT_NAME} ${TVM_DLL} gtest gtest_main)
