@@ -6,10 +6,12 @@
 
 #include <random>
 #include <vector>
+#include <fstream>
 #include <gtest/gtest.h>
 
 #include "tvm/relay/expr.h"
 #include "tvm/relay/op.h"
+#include "tvm/relay/function.h"
 #include "tvm/runtime/device_api.h"
 #include "tvm/runtime/registry.h"
 
@@ -29,6 +31,13 @@ void random_matrix(T *matrix, int rows, int cols) {
             matrix[i * cols + j] = static_cast<T>(dist(gen));
         }
     }
+}
+
+void string_to_file(const std::string& file_name, const std::string& str) {
+    std::ofstream outfile;
+    outfile.open(file_name);
+    outfile << str;
+    outfile.close();
 }
 
 Constant generate_constant_node(int rows, int cols, DataType dtype) {
@@ -101,4 +110,26 @@ void ListAllOpNames() {
     for (const auto &item: op_names) {
         std::cout << item << std::endl;
     }
+}
+
+TEST(Relay, PrintGraph) {
+    using namespace tvm;
+    auto func = []() -> void {
+        relay::Op add_op = relay::Op::Get("add");
+        runtime::NDArray c_data = runtime::NDArray::Empty(
+                {1, 2, 3},
+                {kDLFloat, 32, 1},
+                {kDLCPU, 0}
+        );
+        relay::Constant c1 = relay::Constant(c_data);
+        relay::Call y1 = relay::Call(add_op, {c1, c1});
+        for (int i = 0; i < 2; i++) {
+            y1 = relay::Call(add_op, {c1, y1});
+        }
+        relay::Function foo = relay::Function({}, y1, relay::Type(), {});
+        std::string result = AsText(foo);
+        ASSERT_GT(0, result.size());
+        string_to_file("relay_graph.txt", result);
+    };
+    ASSERT_EXIT((func(), exit(0)), testing::ExitedWithCode(0), ".*");
 }
