@@ -91,9 +91,9 @@ void test_constant_expr() {
         std::cout << std::endl;
     }
 
-    const PackedFunc *relu_pf = runtime::Registry::Get("relay.op.nn._make.relu");
-    relay::Call call_relu1 = (*relu_pf)(const1);
-    relay::Call call_relu2 = (*relu_pf)(const1);
+    const PackedFunc *make_relu = runtime::Registry::Get("relay.op.nn._make.relu");
+    relay::Call call_relu1 = (*make_relu)(const1);
+    relay::Call call_relu2 = (*make_relu)(const1);
     std::cout << "relu1 op addr: " << &call_relu1->op << std::endl;
     std::cout << "relu2 op addr: " << &call_relu2->op << std::endl;
     delete[] static_cast<int32_t *>(const1->data->data);
@@ -125,12 +125,13 @@ TEST(Relay, PrintGraph) {
                 {kDLFloat, 32, 1},
                 {kDLCPU, 0}
         );
+        relay::Constant c1 = relay::Constant(c_data);
         const PackedFunc *make_add_op = runtime::Registry::Get("relay.op._make.add");
         ICHECK_NE(make_add_op, nullptr);
-        relay::Constant c1 = relay::Constant(c_data);
-        relay::Call y1 = relay::Call(add_op, {c1, c1});
-        for (int i = 0; i < 2; i++) {
-            y1 = relay::Call(add_op, {c1, y1});
+
+        relay::Call y1 = (*make_add_op)(c1, c1);
+        for (int i = 0; i < 5; i++) {
+            y1 = (*make_add_op)(c1, y1);
         }
         relay::Function foo = relay::Function({}, y1, relay::Type(), {});
         IRModule mod = IRModule::FromExpr(foo);
