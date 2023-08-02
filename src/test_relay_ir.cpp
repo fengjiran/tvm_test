@@ -140,5 +140,11 @@ TEST(Relay, PrintGraph) {
 }
 
 TEST(Relay, Graph1) {
-    //
+    auto func = []() -> void {
+//        ShapeTuple shape({1, 16, 64, 64});
+        std::vector<int> shape{1, 16, 64, 64};
+        relay::Var input = relay::Var("input",
+                                      TensorType(shape, DataType::Float(32)));
+
+    };
 }
