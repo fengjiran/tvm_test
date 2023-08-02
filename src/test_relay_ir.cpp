@@ -15,8 +15,7 @@
 #include "tvm/runtime/device_api.h"
 #include "tvm/runtime/registry.h"
 
-using namespace tvm::runtime;
-using namespace tvm::relay;
+using namespace tvm;
 
 template<typename T>
 void random_matrix(T *matrix, int rows, int cols) {
@@ -33,7 +32,7 @@ void random_matrix(T *matrix, int rows, int cols) {
     }
 }
 
-int string_to_file(const std::string& file_name, const std::string& str) {
+int string_to_file(const std::string &file_name, const std::string &str) {
     std::ofstream outfile;
     outfile.open(file_name);
     if (!outfile.is_open()) {
@@ -45,7 +44,7 @@ int string_to_file(const std::string& file_name, const std::string& str) {
     return 0;
 }
 
-Constant generate_constant_node(int rows, int cols, DataType dtype) {
+relay::Constant generate_constant_node(int rows, int cols, DataType dtype) {
     ICHECK(dtype.is_int()) << "This data type is not supported now.";
     auto *data = new int32_t[rows * cols];
     random_matrix<int32_t>(data, rows, cols);
@@ -65,23 +64,24 @@ Constant generate_constant_node(int rows, int cols, DataType dtype) {
     tensor.shape = const_cast<ShapeTuple::index_type *>(shape.data());
     tensor.dtype = dtype.operator DLDataType();
     tensor.strides = nullptr;
-    tensor.byte_offset = kAllocAlignment - reinterpret_cast<size_t>(static_cast<char *>(tensor.data)) % kAllocAlignment;
+    tensor.byte_offset = runtime::kAllocAlignment -
+                         reinterpret_cast<size_t>(static_cast<char *>(tensor.data)) % runtime::kAllocAlignment;
     tensor.device = DLDevice{kDLCPU, 0};
     //    size_t mod = reinterpret_cast<size_t>(static_cast<char*>(tensor.data) + tensor.byte_offset) % kAllocAlignment;
     //    std::cout << "the mod: " << mod << std::endl;
-    NDArray x = NDArray::FromExternalDLTensor(tensor);
+    runtime::NDArray x = runtime::NDArray::FromExternalDLTensor(tensor);
 //    const PackedFunc *fp = Registry::Get("relay.ir.Constant");
 //    Constant const1 = (*fp)(x, Span());
 //    Constant const2(x, Span());
 
-    return Constant(x, Span());
+    return relay::Constant(x, Span());
 }
 
 void test_constant_expr() {
     int rows = 4;
     int cols = 3;
 
-    Constant const1 = generate_constant_node(rows, cols, DataType::Int(32));
+    relay::Constant const1 = generate_constant_node(rows, cols, DataType::Int(32));
 
     std::cout << "the constant data:\n";
     for (int i = 0; i < rows; i++) {
@@ -91,9 +91,9 @@ void test_constant_expr() {
         std::cout << std::endl;
     }
 
-    const PackedFunc *relu_pf = Registry::Get("relay.op.nn._make.relu");
-    Call call_relu1 = (*relu_pf)(const1);
-    Call call_relu2 = (*relu_pf)(const1);
+    const PackedFunc *relu_pf = runtime::Registry::Get("relay.op.nn._make.relu");
+    relay::Call call_relu1 = (*relu_pf)(const1);
+    relay::Call call_relu2 = (*relu_pf)(const1);
     std::cout << "relu1 op addr: " << &call_relu1->op << std::endl;
     std::cout << "relu2 op addr: " << &call_relu2->op << std::endl;
     delete[] static_cast<int32_t *>(const1->data->data);
@@ -104,12 +104,12 @@ void test_let_expr() {
     int rows = 4;
     int cols = 3;
     TensorType TT({rows, cols}, DataType::Int(32));
-    Var var("var", TT);
+    relay::Var var("var", TT);
 
 }
 
 void ListAllOpNames() {
-    const PackedFunc *fp = Registry::Get("ir.ListOpNames");
+    const PackedFunc *fp = runtime::Registry::Get("ir.ListOpNames");
     Array<String> op_names = (*fp)();
     LOG_INFO << "List all " << op_names.size() << " ops:";
     for (const auto &item: op_names) {
@@ -118,7 +118,6 @@ void ListAllOpNames() {
 }
 
 TEST(Relay, PrintGraph) {
-    using namespace tvm;
     auto func = []() -> void {
         relay::Op add_op = relay::Op::Get("add");
         runtime::NDArray c_data = runtime::NDArray::Empty(
@@ -133,9 +132,13 @@ TEST(Relay, PrintGraph) {
         }
         relay::Function foo = relay::Function({}, y1, relay::Type(), {});
         IRModule mod = IRModule::FromExpr(foo);
-        std::string result = AsText(mod);
+        std::string result = relay::AsText(mod);
         string_to_file("relay_graph.txt", result);
         ASSERT_GT(0, result.size());
     };
     ASSERT_EXIT((func(), exit(0)), testing::ExitedWithCode(0), ".*");
+}
+
+TEST(Relay, Graph1) {
+    //
 }
