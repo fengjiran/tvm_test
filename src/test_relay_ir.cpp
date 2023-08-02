@@ -119,19 +119,18 @@ void ListAllOpNames() {
 
 TEST(Relay, PrintGraph) {
     auto func = []() -> void {
-        relay::Op add_op = relay::Op::Get("add");
         runtime::NDArray c_data = runtime::NDArray::Empty(
                 {1, 2, 3},
                 {kDLFloat, 32, 1},
                 {kDLCPU, 0}
         );
         relay::Constant c1 = relay::Constant(c_data);
-        const PackedFunc *make_add_op = runtime::Registry::Get("relay.op._make.add");
-        ICHECK_NE(make_add_op, nullptr);
+        const PackedFunc *make_add = runtime::Registry::Get("relay.op._make.add");
+        ICHECK_NE(make_add, nullptr);
 
-        relay::Call y1 = (*make_add_op)(c1, c1);
+        relay::Call y1 = (*make_add)(c1, c1);
         for (int i = 0; i < 5; i++) {
-            y1 = (*make_add_op)(c1, y1);
+            y1 = (*make_add)(c1, y1);
         }
         relay::Function foo = relay::Function({}, y1, relay::Type(), {});
         IRModule mod = IRModule::FromExpr(foo);
@@ -144,12 +143,21 @@ TEST(Relay, PrintGraph) {
 
 TEST(Relay, Graph1) {
     auto func = []() -> void {
-        relay::Var input = relay::Var("input",
-                                      TensorType({1, 16, 64, 64},
-                                                 DataType::Float(32)));
-        relay::Constant w1 = relay::Constant(runtime::NDArray::Empty({1, 16, 64, 64},
+        relay::Var x = relay::Var("x",
+                                  TensorType({1, 16, 64, 64},
+                                             DataType::Float(32)));
+        relay::Constant c1 = relay::Constant(runtime::NDArray::Empty({1, 16, 64, 64},
                                                                      {kDLFloat, 32, 1},
                                                                      {kDLCPU, 0}));
-        relay::Op add_op = relay::Op::Get("add");
+        relay::Var w1 = relay::Var("w1", TensorType());
+        const PackedFunc *make_add = runtime::Registry::Get("relay.op._make.add");
+        const PackedFunc *make_conv2d = runtime::Registry::Get("relay.op.nn._make.conv2d");
+        ICHECK_NE(make_add, nullptr);
+        ICHECK_NE(make_conv2d, nullptr);
+
+        x = (*make_add)(x, c1);
+//        x = (*make_conv2d)(x, w1, );
+
+
     };
 }
