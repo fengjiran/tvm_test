@@ -132,7 +132,8 @@ TEST(Relay, PrintGraph) {
             y1 = relay::Call(add_op, {c1, y1});
         }
         relay::Function foo = relay::Function({}, y1, relay::Type(), {});
-        std::string result = AsText(foo);
+        IRModule mod = IRModule::FromExpr(foo);
+        std::string result = AsText(mod);
         string_to_file("relay_graph.txt", result);
         ASSERT_GT(0, result.size());
     };
