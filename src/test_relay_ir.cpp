@@ -3,12 +3,8 @@
 //
 
 #include "test_relay_ir.h"
-
-#include <random>
-#include <vector>
-#include <fstream>
+#include "utils.h"
 #include <gtest/gtest.h>
-
 #include "tvm/relay/expr.h"
 #include "tvm/relay/op.h"
 #include "tvm/relay/function.h"
@@ -16,33 +12,6 @@
 #include "tvm/runtime/registry.h"
 
 using namespace tvm;
-
-template<typename T>
-void random_matrix(T *matrix, int rows, int cols) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    T low = -20;
-    T high = 20;
-
-    std::uniform_real_distribution<float> dist(low, high);
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            matrix[i * cols + j] = static_cast<T>(dist(gen));
-        }
-    }
-}
-
-int string_to_file(const std::string &file_name, const std::string &str) {
-    std::ofstream outfile;
-    outfile.open(file_name);
-    if (!outfile.is_open()) {
-        std::cout << "Open file failed!\n";
-        return -1;
-    }
-    outfile << str << std::endl;
-    outfile.close();
-    return 0;
-}
 
 relay::Constant generate_constant_node(int rows, int cols, DataType dtype) {
     ICHECK(dtype.is_int()) << "This data type is not supported now.";
@@ -125,12 +94,14 @@ TEST(Relay, PrintGraph) {
                 {kDLCPU, 0}
         );
         relay::Constant c1 = relay::Constant(c_data);
-        const PackedFunc *make_add = runtime::Registry::Get("relay.op._make.add");
-        ICHECK_NE(make_add, nullptr);
+        auto make_add = [](const relay::Expr &lhs, const relay::Expr &rhs) {
+            const Op &add_op = Op::Get("add");
+            return relay::Call(add_op, {lhs, rhs});
+        };
 
-        relay::Call y1 = (*make_add)(c1, c1);
+        relay::Call y1 = make_add(c1, c1);
         for (int i = 0; i < 5; i++) {
-            y1 = (*make_add)(c1, y1);
+            y1 = make_add(c1, y1);
         }
         relay::Function foo = relay::Function({}, y1, relay::Type(), {});
         IRModule mod = IRModule::FromExpr(foo);
