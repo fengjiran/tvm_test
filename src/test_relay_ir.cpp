@@ -2,7 +2,7 @@
 // Created by 赵丹 on 2023/7/23.
 //
 
-#include "test_relay_ir.h"
+//#include "test_relay_ir.h"
 #include "utils.h"
 #include <gtest/gtest.h>
 #include "tvm/relay/expr.h"
@@ -77,7 +77,8 @@ void test_let_expr() {
 
 }
 
-void ListAllOpNames() {
+TEST(Relay, ListAllOpNames) {
+    GTEST_SKIP();
     const PackedFunc *fp = runtime::Registry::Get("ir.ListOpNames");
     Array<String> op_names = (*fp)();
     LOG_INFO << "List all " << op_names.size() << " ops:";
