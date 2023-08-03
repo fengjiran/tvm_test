@@ -7,8 +7,8 @@
 #include "make_conv.h"
 #include <gtest/gtest.h>
 #include "tvm/relay/expr.h"
-#include "tvm/relay/op.h"
 #include "tvm/relay/function.h"
+#include "tvm/relay/analysis.h"
 #include "tvm/runtime/device_api.h"
 #include "tvm/runtime/registry.h"
 
@@ -116,7 +116,7 @@ IRModule CreateRelayGraph1() {
                                                          "", DataType(),
                                                          "nn.conv2d");
     relay::Expr x8 = MakeAdd(x6, x7);
-    relay::Function foo = relay::Function({x1, w1, w2, w3}, x8, relay::Type(), {});
+    relay::Function foo = relay::Function(relay::FreeVars(x8), x8, relay::Type(), {});
     return IRModule::FromExpr(foo);
 }
 
