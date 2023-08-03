@@ -4,6 +4,7 @@
 
 //#include "test_relay_ir.h"
 #include "utils.h"
+#include "make_conv.h"
 #include <gtest/gtest.h>
 #include "tvm/relay/expr.h"
 #include "tvm/relay/op.h"
@@ -39,9 +40,6 @@ relay::Constant generate_constant_node(int rows, int cols, DataType dtype) {
     //    size_t mod = reinterpret_cast<size_t>(static_cast<char*>(tensor.data) + tensor.byte_offset) % kAllocAlignment;
     //    std::cout << "the mod: " << mod << std::endl;
     runtime::NDArray x = runtime::NDArray::FromExternalDLTensor(tensor);
-//    const PackedFunc *fp = Registry::Get("relay.ir.Constant");
-//    Constant const1 = (*fp)(x, Span());
-//    Constant const2(x, Span());
 
     return relay::Constant(x, Span());
 }
@@ -69,12 +67,57 @@ void test_constant_expr() {
 }
 
 void test_let_expr() {
-//    const PackedFunc *fp = Registry::Get("relay.ir.Let");
     int rows = 4;
     int cols = 3;
     TensorType TT({rows, cols}, DataType::Int(32));
     relay::Var var("var", TT);
 
+}
+
+IRModule CreateRelayGraph1() {
+    auto MakeAdd = [](const relay::Expr &lhs, const relay::Expr &rhs) {
+        const Op &add_op = Op::Get("add");
+        return relay::Call(add_op, {lhs, rhs});
+    };
+    relay::Var x1 = relay::Var("x1",
+                               TensorType({1, 16, 64, 64},
+                                          DataType::Float(32)));
+    relay::Constant c1 = relay::Constant(runtime::NDArray::Empty({1, 16, 64, 64},
+                                                                 {kDLFloat, 32, 1},
+                                                                 {kDLCPU, 0}));
+    relay::Var w1 = relay::Var("w1", TensorType());
+    relay::Expr x2 = MakeAdd(x1, c1);
+    relay::Expr x3 = relay::MakeConv<relay::Conv2DAttrs>(x2, w1,
+                                                         {1, 1}, {0, 0},
+                                                         {1, 1}, 1,
+                                                         16, {1, 1},
+                                                         "NCHW", "OIHW",
+                                                         "", DataType(),
+                                                         "nn.conv2d");
+    relay::Constant c2 = relay::Constant(runtime::NDArray::Empty({1},
+                                                                 {kDLFloat, 32, 1},
+                                                                 {kDLCPU, 0}));
+    relay::Expr x4 = MakeAdd(x3, c2);
+    relay::Expr x5 = MakeAdd(x3, x4);
+    relay::Var w2 = relay::Var("w2", TensorType());
+    relay::Var w3 = relay::Var("w3", TensorType());
+    relay::Expr x6 = relay::MakeConv<relay::Conv2DAttrs>(x5, w2,
+                                                         {1, 1}, {0, 0},
+                                                         {1, 1}, 1,
+                                                         16, {1, 1},
+                                                         "NCHW", "OIHW",
+                                                         "", DataType(),
+                                                         "nn.conv2d");
+    relay::Expr x7 = relay::MakeConv<relay::Conv2DAttrs>(x5, w3,
+                                                         {1, 1}, {0, 0},
+                                                         {1, 1}, 1,
+                                                         16, {1, 1},
+                                                         "NCHW", "OIHW",
+                                                         "", DataType(),
+                                                         "nn.conv2d");
+    relay::Expr x8 = MakeAdd(x6, x7);
+    relay::Function foo = relay::Function({x1, w1, w2, w3}, x8, relay::Type(), {});
+    return IRModule::FromExpr(foo);
 }
 
 TEST(Relay, ListAllOpNames) {
@@ -90,7 +133,7 @@ TEST(Relay, ListAllOpNames) {
 TEST(Relay, PrintGraph) {
     auto func = []() -> void {
         runtime::NDArray c_data = runtime::NDArray::Empty(
-                {1, 2, 3},
+                {2, 3},
                 {kDLFloat, 32, 1},
                 {kDLCPU, 0}
         );
@@ -108,28 +151,13 @@ TEST(Relay, PrintGraph) {
         IRModule mod = IRModule::FromExpr(foo);
         std::string result = relay::AsText(mod);
         string_to_file("relay_graph.txt", result);
-        ASSERT_GT(0, result.size());
     };
     ASSERT_EXIT((func(), exit(0)), testing::ExitedWithCode(0), ".*");
 }
 
 TEST(Relay, Graph1) {
-    auto func = []() -> void {
-        relay::Var x = relay::Var("x",
-                                  TensorType({1, 16, 64, 64},
-                                             DataType::Float(32)));
-        relay::Constant c1 = relay::Constant(runtime::NDArray::Empty({1, 16, 64, 64},
-                                                                     {kDLFloat, 32, 1},
-                                                                     {kDLCPU, 0}));
-        relay::Var w1 = relay::Var("w1", TensorType());
-        const PackedFunc *make_add = runtime::Registry::Get("relay.op._make.add");
-        const PackedFunc *make_conv2d = runtime::Registry::Get("relay.op.nn._make.conv2d");
-        ICHECK_NE(make_add, nullptr);
-        ICHECK_NE(make_conv2d, nullptr);
-
-        x = (*make_add)(x, c1);
-//        x = (*make_conv2d)(x, w1, );
-
-
-    };
+    IRModule mod = CreateRelayGraph1();
+    std::string result = relay::AsText(mod, false);
+    string_to_file("relay_graph1.txt", result);
+    ASSERT_GT(result.size(), 0);
 }
