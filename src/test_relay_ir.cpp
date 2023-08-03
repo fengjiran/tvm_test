@@ -125,6 +125,8 @@ TEST(Relay, PrintGraph) {
                 {kDLFloat, 32, 1},
                 {kDLCPU, 0}
         );
+        const PackedFunc *make_add_op = runtime::Registry::Get("relay.op._make.add");
+        ICHECK_NE(make_add_op, nullptr);
         relay::Constant c1 = relay::Constant(c_data);
         relay::Call y1 = relay::Call(add_op, {c1, c1});
         for (int i = 0; i < 2; i++) {
@@ -141,10 +143,12 @@ TEST(Relay, PrintGraph) {
 
 TEST(Relay, Graph1) {
     auto func = []() -> void {
-//        ShapeTuple shape({1, 16, 64, 64});
-        std::vector<int> shape{1, 16, 64, 64};
         relay::Var input = relay::Var("input",
-                                      TensorType(shape, DataType::Float(32)));
-
+                                      TensorType({1, 16, 64, 64},
+                                                 DataType::Float(32)));
+        relay::Constant w1 = relay::Constant(runtime::NDArray::Empty({1, 16, 64, 64},
+                                                                     {kDLFloat, 32, 1},
+                                                                     {kDLCPU, 0}));
+        relay::Op add_op = relay::Op::Get("add");
     };
 }
