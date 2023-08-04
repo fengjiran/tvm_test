@@ -98,5 +98,9 @@ TEST(RelayPass, TestConstantCheck) {
     relay::Constant c1 = relay::Constant(runtime::NDArray::Empty({1, 16, 64, 64},
                                                                  {kDLFloat, 32, 1},
                                                                  {kDLCPU, 0}));
-    ICHECK_EQ(IsComplexConstant(c1), true);
+    relay::Var x1 = relay::Var("x1",
+                               TensorType({1, 16, 64, 64},
+                                          DataType::Float(32)));
+    ICHECK(IsComplexConstant(c1));
+    ICHECK(!IsComplexConstant(x1));
 }
