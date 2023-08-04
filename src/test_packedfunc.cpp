@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 #include "tvm/runtime/registry.h"
 #include "tvm/runtime/c_runtime_api.h"
 #include "tvm/tir/expr.h"

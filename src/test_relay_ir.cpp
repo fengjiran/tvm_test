@@ -5,7 +5,7 @@
 //#include "test_relay_ir.h"
 #include "utils.h"
 #include "make_conv.h"
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 #include "tvm/relay/expr.h"
 #include "tvm/relay/function.h"
 #include "tvm/relay/analysis.h"
