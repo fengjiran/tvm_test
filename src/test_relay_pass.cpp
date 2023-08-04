@@ -94,4 +94,9 @@ bool IsComplexConstant(const Expr &expr) {
     }
 }
 
-
+TEST(RelayPass, TestConstantCheck) {
+    relay::Constant c1 = relay::Constant(runtime::NDArray::Empty({1, 16, 64, 64},
+                                                                 {kDLFloat, 32, 1},
+                                                                 {kDLCPU, 0}));
+    ICHECK_EQ(IsComplexConstant(c1), true);
+}
