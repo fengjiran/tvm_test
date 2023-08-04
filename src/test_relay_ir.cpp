@@ -2,13 +2,11 @@
 // Created by 赵丹 on 2023/7/23.
 //
 
-//#include "test_relay_ir.h"
 #include "utils.h"
-#include "make_conv.h"
+#include "build_relay_model.h"
 #include "gtest/gtest.h"
 #include "tvm/relay/expr.h"
 #include "tvm/relay/function.h"
-#include "tvm/relay/analysis.h"
 #include "tvm/runtime/device_api.h"
 #include "tvm/runtime/registry.h"
 
@@ -74,52 +72,6 @@ void test_let_expr() {
 
 }
 
-IRModule CreateRelayGraph1() {
-    auto MakeAdd = [](const relay::Expr &lhs, const relay::Expr &rhs) {
-        const Op &add_op = Op::Get("add");
-        return relay::Call(add_op, {lhs, rhs});
-    };
-    relay::Var x1 = relay::Var("x1",
-                               TensorType({1, 16, 64, 64},
-                                          DataType::Float(32)));
-    relay::Constant c1 = relay::Constant(runtime::NDArray::Empty({1, 16, 64, 64},
-                                                                 {kDLFloat, 32, 1},
-                                                                 {kDLCPU, 0}));
-    relay::Var w1 = relay::Var("w1", TensorType());
-    relay::Expr x2 = MakeAdd(x1, c1);
-    relay::Expr x3 = relay::MakeConv<relay::Conv2DAttrs>(x2, w1,
-                                                         {1, 1}, {0, 0},
-                                                         {1, 1}, 1,
-                                                         16, {1, 1},
-                                                         "NCHW", "OIHW",
-                                                         "", DataType(),
-                                                         "nn.conv2d");
-    relay::Constant c2 = relay::Constant(runtime::NDArray::Empty({1},
-                                                                 {kDLFloat, 32, 1},
-                                                                 {kDLCPU, 0}));
-    relay::Expr x4 = MakeAdd(x3, c2);
-    relay::Expr x5 = MakeAdd(x3, x4);
-    relay::Var w2 = relay::Var("w2", TensorType());
-    relay::Var w3 = relay::Var("w3", TensorType());
-    relay::Expr x6 = relay::MakeConv<relay::Conv2DAttrs>(x5, w2,
-                                                         {1, 1}, {0, 0},
-                                                         {1, 1}, 1,
-                                                         16, {1, 1},
-                                                         "NCHW", "OIHW",
-                                                         "", DataType(),
-                                                         "nn.conv2d");
-    relay::Expr x7 = relay::MakeConv<relay::Conv2DAttrs>(x5, w3,
-                                                         {1, 1}, {0, 0},
-                                                         {1, 1}, 1,
-                                                         16, {1, 1},
-                                                         "NCHW", "OIHW",
-                                                         "", DataType(),
-                                                         "nn.conv2d");
-    relay::Expr x8 = MakeAdd(x6, x7);
-    relay::Function foo = relay::Function(relay::FreeVars(x8), x8, relay::Type(), {});
-    return IRModule::FromExpr(foo);
-}
-
 TEST(Relay, ListAllOpNames) {
     GTEST_SKIP();
     const PackedFunc *fp = runtime::Registry::Get("ir.ListOpNames");
@@ -156,8 +108,8 @@ TEST(Relay, PrintGraph) {
 }
 
 TEST(Relay, Graph1) {
-    IRModule mod = CreateRelayGraph1();
+    IRModule mod = BuildRelayModel_1();
     std::string result = relay::AsText(mod, false);
-    string_to_file("relay_graph1.txt", result);
+    string_to_file("relay_model_1.txt", result);
     ASSERT_GT(result.size(), 0);
 }
