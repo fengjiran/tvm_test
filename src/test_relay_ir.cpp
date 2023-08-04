@@ -82,7 +82,7 @@ TEST(Relay, ListAllOpNames) {
     }
 }
 
-TEST(Relay, PrintGraph) {
+TEST(Relay, PrintToyModel) {
     auto func = []() -> void {
         runtime::NDArray c_data = runtime::NDArray::Empty(
                 {2, 3},
@@ -101,13 +101,13 @@ TEST(Relay, PrintGraph) {
         }
         relay::Function foo = relay::Function({}, y1, relay::Type(), {});
         IRModule mod = IRModule::FromExpr(foo);
-        std::string result = relay::AsText(mod);
-        string_to_file("relay_graph.txt", result);
+        std::string result = relay::AsText(mod, false);
+        string_to_file("relay_toy_model.txt", result);
     };
     ASSERT_EXIT((func(), exit(0)), testing::ExitedWithCode(0), ".*");
 }
 
-TEST(Relay, Graph1) {
+TEST(Relay, BuildRelayModel_1) {
     IRModule mod = BuildRelayModel_1();
     std::string result = relay::AsText(mod, false);
     string_to_file("relay_model_1.txt", result);
