@@ -1,5 +1,5 @@
 #include "test_relay_ir.h"
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
 int main() {
     test_constant_expr();
