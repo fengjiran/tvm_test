@@ -42,7 +42,15 @@ relay::Constant generate_constant_node(int rows, int cols, DataType dtype) {
     return relay::Constant(x, Span());
 }
 
-void test_constant_expr() {
+void test_let_expr() {
+    int rows = 4;
+    int cols = 3;
+    TensorType TT({rows, cols}, DataType::Int(32));
+    relay::Var var("var", TT);
+
+}
+
+TEST(Relay, TestConstantExpr) {
     int rows = 4;
     int cols = 3;
 
@@ -62,14 +70,6 @@ void test_constant_expr() {
     std::cout << "relu1 op addr: " << &call_relu1->op << std::endl;
     std::cout << "relu2 op addr: " << &call_relu2->op << std::endl;
     delete[] static_cast<int32_t *>(const1->data->data);
-}
-
-void test_let_expr() {
-    int rows = 4;
-    int cols = 3;
-    TensorType TT({rows, cols}, DataType::Int(32));
-    relay::Var var("var", TT);
-
 }
 
 TEST(Relay, ListAllOpNames) {
