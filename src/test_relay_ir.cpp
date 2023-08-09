@@ -52,6 +52,7 @@ void test_let_expr() {
 
 TEST(Relay, RelayExpr) {
     //
+    //
 }
 
 TEST(Relay, TestConstantExpr) {
