@@ -50,12 +50,7 @@ void test_let_expr() {
 
 }
 
-TEST(Relay, RelayExpr) {
-    //
-    //
-}
-
-TEST(Relay, TestConstantExpr) {
+TEST(Relay, ConstantExpr) {
     int rows = 4;
     int cols = 3;
 
