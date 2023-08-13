@@ -59,3 +59,7 @@ IRModule BuildRelayModel_1() {
 IRModule BuildRelayModel_2() {
     //
 }
+
+IRModule BuildResBlock() {
+    //
+}
