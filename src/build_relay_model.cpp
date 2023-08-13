@@ -60,6 +60,6 @@ IRModule BuildRelayModel_2() {
     //
 }
 
-relay::Expr BuildResBasicBlock() {
+relay::Expr BuildResBasicBlock(relay::Expr x) {
     //
 }
