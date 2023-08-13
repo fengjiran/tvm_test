@@ -55,3 +55,7 @@ IRModule BuildRelayModel_1() {
     relay::Function foo = relay::Function(relay::FreeVars(x8), x8, relay::Type(), {});
     return IRModule::FromExpr(foo);
 }
+
+IRModule BuildRelayModel_2() {
+    //
+}
