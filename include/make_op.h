@@ -2,8 +2,8 @@
 // Created by 赵丹 on 2023/8/3.
 //
 
-#ifndef TVM_TEST_MAKE_CONV_H
-#define TVM_TEST_MAKE_CONV_H
+#ifndef TVM_TEST_MAKE_OP_H
+#define TVM_TEST_MAKE_OP_H
 
 #include "tvm/relay/attrs/nn.h"
 #include "tvm/relay/op.h"
@@ -33,7 +33,11 @@ namespace tvm::relay {
         const Op &op = Op::Get(std::move(op_name));
         return Call(op, {std::move(data), std::move(weight)}, Attrs(attrs), {});
     }
+
+    inline Expr MakeAdd(const relay::Expr &lhs, const relay::Expr &rhs) {
+        const Op &add_op = Op::Get("add");
+        return Call(add_op, {lhs, rhs});
+    }
 }
 
-
-#endif //TVM_TEST_MAKE_CONV_H
+#endif //TVM_TEST_MAKE_OP_H

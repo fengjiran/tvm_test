@@ -3,7 +3,7 @@
 //
 
 #include "build_relay_model.h"
-#include "make_conv.h"
+#include "make_op.h"
 #include "tvm/relay/expr.h"
 #include "tvm/relay/function.h"
 #include "tvm/relay/analysis.h"
@@ -11,10 +11,10 @@
 using namespace tvm;
 
 IRModule BuildRelayModel_1() {
-    auto MakeAdd = [](const relay::Expr &lhs, const relay::Expr &rhs) {
-        const Op &add_op = Op::Get("add");
-        return relay::Call(add_op, {lhs, rhs});
-    };
+//    auto MakeAdd = [](const relay::Expr &lhs, const relay::Expr &rhs) {
+//        const Op &add_op = Op::Get("add");
+//        return relay::Call(add_op, {lhs, rhs});
+//    };
     relay::Var x1 = relay::Var("x1",
                                TensorType({1, 16, 64, 64},
                                           DataType::Float(32)));
