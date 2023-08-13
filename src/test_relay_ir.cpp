@@ -3,6 +3,7 @@
 //
 
 #include "utils.h"
+#include "make_op.h"
 #include "build_relay_model.h"
 #include "gtest/gtest.h"
 #include "tvm/relay/expr.h"
@@ -90,14 +91,14 @@ TEST(Relay, PrintToyModel) {
                 {kDLCPU, 0}
         );
         relay::Constant c1 = relay::Constant(c_data);
-        auto make_add = [](const relay::Expr &lhs, const relay::Expr &rhs) {
-            const Op &add_op = Op::Get("add");
-            return relay::Call(add_op, {lhs, rhs});
-        };
+//        auto make_add = [](const relay::Expr &lhs, const relay::Expr &rhs) {
+//            const Op &add_op = Op::Get("add");
+//            return relay::Call(add_op, {lhs, rhs});
+//        };
 
-        relay::Call y1 = make_add(c1, c1);
+        relay::Expr y1 = relay::MakeAdd(c1, c1);
         for (int i = 0; i < 5; i++) {
-            y1 = make_add(c1, y1);
+            y1 = relay::MakeAdd(c1, y1);
         }
         relay::Function foo = relay::Function({}, y1, relay::Type(), {});
         IRModule mod = IRModule::FromExpr(foo);

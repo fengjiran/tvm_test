@@ -38,6 +38,11 @@ namespace tvm::relay {
         const Op &add_op = Op::Get("add");
         return Call(add_op, {lhs, rhs});
     }
+
+    inline Expr MakeRelu(const Expr& data) {
+        const Op& op = Op::Get("nn.relu");
+        return Call(op, {data}, Attrs(), {});
+    }
 }
 
 #endif //TVM_TEST_MAKE_OP_H
