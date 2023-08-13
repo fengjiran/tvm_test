@@ -22,7 +22,7 @@ IRModule BuildRelayModel_1() {
                                                                  {kDLFloat, 32, 1},
                                                                  {kDLCPU, 0}));
     relay::Var w1 = relay::Var("w1", TensorType());
-    relay::Expr x2 = MakeAdd(x1, c1);
+    relay::Expr x2 = relay::MakeAdd(x1, c1);
     relay::Expr x3 = relay::MakeConv<relay::Conv2DAttrs>(x2, w1,
                                                          {1, 1}, {0, 0},
                                                          {1, 1}, 1,
@@ -33,8 +33,8 @@ IRModule BuildRelayModel_1() {
     relay::Constant c2 = relay::Constant(runtime::NDArray::Empty({1},
                                                                  {kDLFloat, 32, 1},
                                                                  {kDLCPU, 0}));
-    relay::Expr x4 = MakeAdd(x3, c2);
-    relay::Expr x5 = MakeAdd(x3, x4);
+    relay::Expr x4 = relay::MakeAdd(x3, c2);
+    relay::Expr x5 = relay::MakeAdd(x3, x4);
     relay::Var w2 = relay::Var("w2", TensorType());
     relay::Var w3 = relay::Var("w3", TensorType());
     relay::Expr x6 = relay::MakeConv<relay::Conv2DAttrs>(x5, w2,
@@ -51,7 +51,7 @@ IRModule BuildRelayModel_1() {
                                                          "NCHW", "OIHW",
                                                          "", DataType(),
                                                          "nn.conv2d");
-    relay::Expr x8 = MakeAdd(x6, x7);
+    relay::Expr x8 = relay::MakeAdd(x6, x7);
     relay::Function foo = relay::Function(relay::FreeVars(x8), x8, relay::Type(), {});
     return IRModule::FromExpr(foo);
 }

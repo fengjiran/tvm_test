@@ -34,7 +34,7 @@ namespace tvm::relay {
         return Call(op, {std::move(data), std::move(weight)}, Attrs(attrs), {});
     }
 
-    inline Expr MakeAdd(const relay::Expr &lhs, const relay::Expr &rhs) {
+    inline Expr MakeAdd(const Expr &lhs, const Expr &rhs) {
         const Op &add_op = Op::Get("add");
         return Call(add_op, {lhs, rhs});
     }
