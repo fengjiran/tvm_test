@@ -39,9 +39,22 @@ namespace tvm::relay {
         return Call(add_op, {lhs, rhs});
     }
 
-    inline Expr MakeRelu(const Expr& data) {
-        const Op& op = Op::Get("nn.relu");
+    inline Expr MakeRelu(const Expr &data) {
+        const Op &op = Op::Get("nn.relu");
         return Call(op, {data}, Attrs(), {});
+    }
+
+    inline Expr MakeBatchNorm(Expr data, Expr gamma, Expr beta, Expr moving_mean, Expr moving_var, int axis,
+                              double epsilon, bool center, bool scale) {
+        auto attrs = make_object<BatchNormAttrs>();
+        attrs->axis = axis;
+        attrs->epsilon = epsilon;
+        attrs->center = center;
+        attrs->scale = scale;
+        static const Op &op = Op::Get("nn.batch_norm");
+        return Call(op,
+                    {std::move(data), std::move(gamma), std::move(beta), std::move(moving_mean), std::move(moving_var)},
+                    Attrs(attrs), {});
     }
 }
 

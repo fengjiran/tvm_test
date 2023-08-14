@@ -52,8 +52,18 @@ IRModule BuildRelayModel_1() {
     return IRModule::FromExpr(foo);
 }
 
-IRModule BuildRelayModel_2(relay::Expr x) {
-    //
+relay::Expr BuildRelayModel_2(relay::Expr x) {
+    relay::Constant w1 = relay::Constant(runtime::NDArray::Empty({16, 3, 3, 3},
+                                                                 {kDLFloat, 32, 1},
+                                                                 {kDLCPU, 0}));
+    relay::Expr x1 = relay::MakeConv<relay::Conv2DAttrs>(x, w1,
+                                                         {1, 1}, {1, 1},
+                                                         {1, 1}, 1,
+                                                         16, {3, 3},
+                                                         "NCHW", "OIHW",
+                                                         "", DataType(),
+                                                         "nn.conv2d");
+
 }
 
 relay::Expr BuildResBasicBlock(relay::Expr x) {
