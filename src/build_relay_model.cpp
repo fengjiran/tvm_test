@@ -6,7 +6,6 @@
 #include "make_op.h"
 #include "tvm/relay/expr.h"
 #include "tvm/relay/function.h"
-#include "tvm/relay/analysis.h"
 
 using namespace tvm;
 

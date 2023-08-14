@@ -103,9 +103,21 @@ TEST(Relay, PrintToyModel) {
     ASSERT_EXIT((func(), exit(0)), testing::ExitedWithCode(0), ".*");
 }
 
-TEST(Relay, BuildRelayModel_1) {
+TEST(Relay, RelayModel1) {
     IRModule mod = BuildRelayModel_1();
     std::string result = relay::AsText(mod, false);
     string_to_file("relay_model_1.txt", result);
+    ASSERT_GT(result.size(), 0);
+}
+
+TEST(Relay, RelayModel2) {
+    relay::Var x = relay::Var("x",
+                              TensorType({1, 3, 64, 64},
+                                         DataType::Float(32)));
+    relay::Expr output = BuildRelayModel_2(x);
+    relay::Function foo = relay::Function(relay::FreeVars(output), output, relay::Type(), {});
+    IRModule mod = IRModule::FromExpr(foo);
+    std::string result = relay::AsText(mod, false);
+    string_to_file("relay_model_2.txt", result);
     ASSERT_GT(result.size(), 0);
 }
