@@ -91,11 +91,6 @@ TEST(Relay, PrintToyModel) {
                 {kDLCPU, 0}
         );
         relay::Constant c1 = relay::Constant(c_data);
-//        auto make_add = [](const relay::Expr &lhs, const relay::Expr &rhs) {
-//            const Op &add_op = Op::Get("add");
-//            return relay::Call(add_op, {lhs, rhs});
-//        };
-
         relay::Expr y1 = relay::MakeAdd(c1, c1);
         for (int i = 0; i < 5; i++) {
             y1 = relay::MakeAdd(c1, y1);
