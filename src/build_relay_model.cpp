@@ -52,10 +52,23 @@ IRModule BuildRelayModel_1() {
     return IRModule::FromExpr(foo);
 }
 
-relay::Expr BuildRelayModel_2(relay::Expr x) {
+relay::Expr BuildRelayModel_2(const relay::Expr &x) {
     relay::Constant w1 = relay::Constant(runtime::NDArray::Empty({16, 3, 3, 3},
                                                                  {kDLFloat, 32, 1},
                                                                  {kDLCPU, 0}));
+    relay::Constant gamma = relay::Constant(runtime::NDArray::Empty({16},
+                                                                    {kDLFloat, 32, 1},
+                                                                    {kDLCPU, 0}));
+    relay::Constant beta = relay::Constant(runtime::NDArray::Empty({16},
+                                                                   {kDLFloat, 32, 1},
+                                                                   {kDLCPU, 0}));
+    relay::Constant moving_mean = relay::Constant(runtime::NDArray::Empty({16},
+                                                                          {kDLFloat, 32, 1},
+                                                                          {kDLCPU, 0}));
+    relay::Constant moving_var = relay::Constant(runtime::NDArray::Empty({16},
+                                                                         {kDLFloat, 32, 1},
+                                                                         {kDLCPU, 0}));
+
     relay::Expr x1 = relay::MakeConv<relay::Conv2DAttrs>(x, w1,
                                                          {1, 1}, {1, 1},
                                                          {1, 1}, 1,
@@ -63,7 +76,9 @@ relay::Expr BuildRelayModel_2(relay::Expr x) {
                                                          "NCHW", "OIHW",
                                                          "", DataType(),
                                                          "nn.conv2d");
-
+    relay::Expr x2 = relay::MakeBatchNorm(x1, gamma, beta, moving_mean, moving_var, 1, 1e-5, true, true);
+    relay::Expr x3 = relay::MakeRelu(x2);
+    return x3;
 }
 
 relay::Expr BuildResBasicBlock(relay::Expr x) {
