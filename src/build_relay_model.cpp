@@ -52,7 +52,7 @@ IRModule BuildRelayModel_1() {
     return IRModule::FromExpr(foo);
 }
 
-IRModule BuildRelayModel_2() {
+IRModule BuildRelayModel_2(relay::Expr x) {
     //
 }
 
