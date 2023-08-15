@@ -8,6 +8,8 @@
 #include "tvm/relay/op_attr_types.h"
 #include "tvm/relay/op_strategy.h"
 #include "tvm/target/virtual_device.h"
+#include "tvm/topi/broadcast.h"
+#include "tvm/topi/generic/injective.h"
 #include "build_relay_model.h"
 
 using namespace tvm;
@@ -96,6 +98,26 @@ bool IsComplexConstant(const Expr &expr) {
         return false;
     }
 }
+
+TVM_REGISTER_GLOBAL("test.strategy")
+.set_body_typed([](const Attrs& attrs, const Array<te::Tensor>& inputs, const Type& out_type,
+                   const Target& target) {
+    FTVMCompute fcompute = [](const Attrs& attrs, const Array<te::Tensor>& inputs,
+                              const Type& out_type) -> Array<te::Tensor> {
+        ICHECK_EQ(inputs.size(), 2U);
+        return {topi::add(inputs[0], inputs[1])};
+    };
+    FTVMSchedule fschedule = [](const Attrs& attrs, const Array<te::Tensor>& outs,
+                                const Target& target) {
+        With<Target> target_scope(target);
+        return topi::generic::schedule_injective(target, outs);
+    };
+
+    auto n = make_object<OpStrategyNode>();
+    auto strategy = tvm::relay::OpStrategy(std::move(n));
+    strategy.AddImplementation(fcompute, fschedule, "test.strategy", 10);
+    return strategy;
+});
 
 TVM_REGISTER_GLOBAL("relay.backend.lower_call")
 .set_body_typed([](const relay::Call& call, const Array<te::Tensor>& inputs,
