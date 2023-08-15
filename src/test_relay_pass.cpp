@@ -107,9 +107,12 @@ TEST(RelayPass, ConstantCheck) {
 }
 
 TEST(RelayPass, FoldConstant) {
-    relay::Var x = relay::Var("x",
-                              TensorType({1, 3, 64, 64},
-                                         DataType::Float(32)));
+//    relay::Var x = relay::Var("x",
+//                              TensorType({1, 3, 64, 64},
+//                                         DataType::Float(32)));
+    relay::Constant x = relay::Constant(runtime::NDArray::Empty({1, 3, 64, 64},
+                                                                 {kDLFloat, 32, 1},
+                                                                 {kDLCPU, 0}));
     relay::Expr output = BuildConvBNRelu(x, 3, 16, 1, 1, 1, 1, 3);
     std::string res = relay::AsText(IRModule::FromExpr(output), false);
     std::cout << res << std::endl;
