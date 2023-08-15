@@ -5,6 +5,8 @@
 #include "tvm/relay/expr.h"
 #include "tvm/relay/op.h"
 #include "tvm/relay/attrs/on_device.h"
+#include "tvm/relay/op_attr_types.h"
+#include "tvm/relay/op_strategy.h"
 #include "tvm/target/virtual_device.h"
 #include "build_relay_model.h"
 
@@ -95,6 +97,22 @@ bool IsComplexConstant(const Expr &expr) {
     }
 }
 
+TVM_REGISTER_GLOBAL("relay.backend.lower_call")
+.set_body_typed([](const relay::Call& call, const Array<te::Tensor>& inputs,
+                   const Target& target) {
+    static auto fstrategy = Op::GetAttrMap<relay::FTVMStrategy>("FTVMStrategy");
+    Op op = Downcast<Op>(call->op);
+    auto out_type = call->checked_type();
+    OpStrategy strategy = fstrategy[op](call->attrs, inputs, out_type, target);
+    auto impl = strategy->specializations[0]->implementations[0];
+    auto outs = impl.Compute(call->attrs, inputs, out_type);
+    auto f = tvm::runtime::Registry::Get("relay.backend._make_LoweredOutput");
+    if (!f) {
+        LOG(FATAL) << "relay.backend._make_LoweredOutput is not registered";
+    }
+    return (*f)(outs, impl);
+});
+
 TEST(RelayPass, ConstantCheck) {
     relay::Constant c1 = relay::Constant(runtime::NDArray::Empty({1, 16, 64, 64},
                                                                  {kDLFloat, 32, 1},
@@ -117,9 +135,9 @@ TEST(RelayPass, FoldConstant) {
     std::string res = relay::AsText(IRModule::FromExpr(output), false);
     std::cout << res << std::endl;
     const PackedFunc* flower_call = runtime::Registry::Get("relay.backend.lower_call");
-    ICHECK(flower_call == nullptr);
-//    const PackedFunc* fp = runtime::Registry::Get("relay._transform.FoldConstantExpr");
-//
-//    relay::Expr after = (*fp)(output, IRModule::FromExpr(output), false);
-//    std::cout << relay::AsText(IRModule::FromExpr(after), false) << std::endl;
+    ICHECK_NOTNULL(flower_call);
+    const PackedFunc* fp = runtime::Registry::Get("relay._transform.FoldConstantExpr");
+
+    relay::Expr after = (*fp)(output, IRModule::FromExpr(output), false);
+    std::cout << relay::AsText(IRModule::FromExpr(after), false) << std::endl;
 }
