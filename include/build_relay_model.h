@@ -12,4 +12,7 @@ tvm::IRModule BuildRelayModel_1();
 
 tvm::relay::Expr BuildRelayModel_2(const tvm::relay::Expr &x);
 
+tvm::relay::Expr BuildConvBNRelu(const tvm::relay::Expr &x, int cin, int cout, int stride,
+                                 int padding, int dilation, int groups, int ksize = 3);
+
 #endif //TVM_TEST_BUILD_RELAY_MODEL_H

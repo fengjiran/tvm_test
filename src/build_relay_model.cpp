@@ -51,27 +51,29 @@ IRModule BuildRelayModel_1() {
     return IRModule::FromExpr(foo);
 }
 
-relay::Expr BuildRelayModel_2(const relay::Expr &x) {
-    relay::Constant w1 = relay::Constant(runtime::NDArray::Empty({16, 3, 3, 3},
+relay::Expr BuildConvBNRelu(const relay::Expr &x, int cin, int cout, int stride,
+                            int padding, int dilation, int groups, int ksize) {
+
+    relay::Constant w1 = relay::Constant(runtime::NDArray::Empty({cout, cin, ksize, ksize},
                                                                  {kDLFloat, 32, 1},
                                                                  {kDLCPU, 0}));
-    relay::Constant gamma = relay::Constant(runtime::NDArray::Empty({16},
+    relay::Constant gamma = relay::Constant(runtime::NDArray::Empty({cout},
                                                                     {kDLFloat, 32, 1},
                                                                     {kDLCPU, 0}));
-    relay::Constant beta = relay::Constant(runtime::NDArray::Empty({16},
+    relay::Constant beta = relay::Constant(runtime::NDArray::Empty({cout},
                                                                    {kDLFloat, 32, 1},
                                                                    {kDLCPU, 0}));
-    relay::Constant moving_mean = relay::Constant(runtime::NDArray::Empty({16},
+    relay::Constant moving_mean = relay::Constant(runtime::NDArray::Empty({cout},
                                                                           {kDLFloat, 32, 1},
                                                                           {kDLCPU, 0}));
-    relay::Constant moving_var = relay::Constant(runtime::NDArray::Empty({16},
+    relay::Constant moving_var = relay::Constant(runtime::NDArray::Empty({cout},
                                                                          {kDLFloat, 32, 1},
                                                                          {kDLCPU, 0}));
 
     relay::Expr x1 = relay::MakeConv<relay::Conv2DAttrs>(x, w1,
-                                                         {1, 1}, {1, 1},
-                                                         {1, 1}, 1,
-                                                         16, {3, 3},
+                                                         {stride, stride}, {padding, padding},
+                                                         {dilation, dilation}, groups,
+                                                         cout, {ksize, ksize},
                                                          "NCHW", "OIHW",
                                                          "", DataType(),
                                                          "nn.conv2d");
