@@ -6,6 +6,7 @@
 #include "tvm/relay/op.h"
 #include "tvm/relay/attrs/on_device.h"
 #include "tvm/target/virtual_device.h"
+#include "build_relay_model.h"
 
 using namespace tvm;
 using namespace tvm::relay;
@@ -106,5 +107,14 @@ TEST(RelayPass, ConstantCheck) {
 }
 
 TEST(RelayPass, FoldConstant) {
-    //
+    relay::Var x = relay::Var("x",
+                              TensorType({1, 3, 64, 64},
+                                         DataType::Float(32)));
+    relay::Expr output = BuildConvBNRelu(x, 3, 16, 1, 1, 1, 1, 3);
+    std::string res = relay::AsText(IRModule::FromExpr(output), false);
+    std::cout << res << std::endl;
+    const PackedFunc* fp = runtime::Registry::Get("relay._transform.FoldConstantExpr");
+
+    relay::Expr after = (*fp)(output, IRModule::FromExpr(output), false);
+    std::cout << relay::AsText(IRModule::FromExpr(after), false) << std::endl;
 }
