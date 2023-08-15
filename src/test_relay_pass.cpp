@@ -116,8 +116,10 @@ TEST(RelayPass, FoldConstant) {
     relay::Expr output = BuildConvBNRelu(x, 3, 16, 1, 1, 1, 1, 3);
     std::string res = relay::AsText(IRModule::FromExpr(output), false);
     std::cout << res << std::endl;
-    const PackedFunc* fp = runtime::Registry::Get("relay._transform.FoldConstantExpr");
-
-    relay::Expr after = (*fp)(output, IRModule::FromExpr(output), false);
-    std::cout << relay::AsText(IRModule::FromExpr(after), false) << std::endl;
+    const PackedFunc* flower_call = runtime::Registry::Get("relay.backend.lower_call");
+    ICHECK(flower_call == nullptr);
+//    const PackedFunc* fp = runtime::Registry::Get("relay._transform.FoldConstantExpr");
+//
+//    relay::Expr after = (*fp)(output, IRModule::FromExpr(output), false);
+//    std::cout << relay::AsText(IRModule::FromExpr(after), false) << std::endl;
 }
