@@ -85,3 +85,7 @@ relay::Expr BuildConvBNRelu(const relay::Expr &x, int cin, int cout, int stride,
 relay::Expr BuildResBasicBlock(relay::Expr x) {
     //
 }
+
+relay::Expr BuildAddExpr(const relay::Expr& x, const relay::Expr& y) {
+    return relay::MakeAdd(x, y);
+}
