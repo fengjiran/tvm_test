@@ -87,5 +87,7 @@ relay::Expr BuildResBasicBlock(relay::Expr x) {
 }
 
 relay::Expr BuildAddExpr(const relay::Expr& x, const relay::Expr& y) {
-    return relay::MakeAdd(x, y);
+    auto z = relay::MakeAdd(x, y);
+    z = relay::MakeRelu(z);
+    return z;
 }

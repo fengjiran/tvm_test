@@ -6,7 +6,6 @@
 #include "tvm/relay/op.h"
 #include "tvm/relay/attrs/on_device.h"
 #include "tvm/target/virtual_device.h"
-#include "tvm/topi/generic/injective.h"
 #include "build_relay_model.h"
 #include "test_op_strategy.h"
 
