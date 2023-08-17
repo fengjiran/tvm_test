@@ -99,7 +99,7 @@ bool IsComplexConstant(const Expr &expr) {
     }
 }
 
-TVM_REGISTER_GLOBAL("test.strategy")
+TVM_REGISTER_GLOBAL("test.add_strategy")
 .set_body_typed([](const Attrs& attrs, const Array<te::Tensor>& inputs, const Type& out_type,
                    const Target& target) {
     FTVMCompute fcompute = [](const Attrs& attrs, const Array<te::Tensor>& inputs,
@@ -114,8 +114,8 @@ TVM_REGISTER_GLOBAL("test.strategy")
     };
 
     auto n = make_object<OpStrategyNode>();
-    auto strategy = tvm::relay::OpStrategy(std::move(n));
-    strategy.AddImplementation(fcompute, fschedule, "test.strategy", 10);
+    auto strategy = relay::OpStrategy(std::move(n));
+    strategy.AddImplementation(fcompute, fschedule, "test.add_strategy", 10);
     return strategy;
 });
 
@@ -128,7 +128,7 @@ TVM_REGISTER_GLOBAL("relay.backend.lower_call")
     OpStrategy strategy = fstrategy[op](call->attrs, inputs, out_type, target);
     auto impl = strategy->specializations[0]->implementations[0];
     auto outs = impl.Compute(call->attrs, inputs, out_type);
-    auto f = tvm::runtime::Registry::Get("relay.backend._make_LoweredOutput");
+    auto f = runtime::Registry::Get("relay.backend._make_LoweredOutput");
     if (!f) {
         LOG(FATAL) << "relay.backend._make_LoweredOutput is not registered";
     }
@@ -147,12 +147,16 @@ TEST(RelayPass, ConstantCheck) {
 }
 
 TEST(RelayPass, FoldConstant) {
-//    relay::Var x = relay::Var("x",
-//                              TensorType({1, 3, 64, 64},
-//                                         DataType::Float(32)));
-    relay::Constant x = relay::Constant(runtime::NDArray::Empty({1, 3, 64, 64},
-                                                                 {kDLFloat, 32, 1},
-                                                                 {kDLCPU, 0}));
+    auto reg_op_attr = runtime::Registry::Get("ir.RegisterOpAttr");
+    ICHECK_NOTNULL(reg_op_attr);
+    auto reset_op_attr = runtime::Registry::Get("ir.OpResetAttr");
+    ICHECK_NOTNULL(reset_op_attr);
+    relay::Var x = relay::Var("x",
+                              TensorType({1, 3, 64, 64},
+                                         DataType::Float(32)));
+//    relay::Constant x = relay::Constant(runtime::NDArray::Empty({1, 3, 64, 64},
+//                                                                 {kDLFloat, 32, 1},
+//                                                                 {kDLCPU, 0}));
     relay::Constant y = relay::Constant(runtime::NDArray::Empty({1, 3, 64, 64},
                                                                 {kDLFloat, 32, 1},
                                                                 {kDLCPU, 0}));
