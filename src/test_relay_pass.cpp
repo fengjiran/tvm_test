@@ -151,6 +151,9 @@ TEST(RelayPass, FoldConstant) {
     ICHECK_NOTNULL(reg_op_attr);
     auto reset_op_attr = runtime::Registry::Get("ir.OpResetAttr");
     ICHECK_NOTNULL(reset_op_attr);
+    auto add_op_strategy = runtime::Registry::Get("test.add_strategy");
+    ICHECK_NOTNULL(add_op_strategy);
+
     relay::Var x = relay::Var("x",
                               TensorType({1, 3, 64, 64},
                                          DataType::Float(32)));
