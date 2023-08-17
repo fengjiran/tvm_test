@@ -110,6 +110,7 @@ TEST(RelayPass, ConstantCheck) {
 
 TEST(RelayPass, FoldConstant) {
     ResetAddOpStrategy();
+    ResetReluOpStrategy();
 //    relay::Var x = relay::Var("x",
 //                              TensorType({1, 3, 64, 64},
 //                                         DataType::Float(32)));
