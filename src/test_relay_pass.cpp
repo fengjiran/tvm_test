@@ -149,17 +149,24 @@ TEST(RelayPass, ConstantCheck) {
 TEST(RelayPass, FoldConstant) {
     auto reg_op_attr = runtime::Registry::Get("ir.RegisterOpAttr");
     ICHECK_NOTNULL(reg_op_attr);
+
     auto reset_op_attr = runtime::Registry::Get("ir.OpResetAttr");
     ICHECK_NOTNULL(reset_op_attr);
+
     auto add_op_strategy = runtime::Registry::Get("test.add_strategy");
     ICHECK_NOTNULL(add_op_strategy);
 
-    relay::Var x = relay::Var("x",
-                              TensorType({1, 3, 64, 64},
-                                         DataType::Float(32)));
-//    relay::Constant x = relay::Constant(runtime::NDArray::Empty({1, 3, 64, 64},
-//                                                                 {kDLFloat, 32, 1},
-//                                                                 {kDLCPU, 0}));
+    auto fgeneric = GenericFunc::Get("test.strategy_generic").set_default(*add_op_strategy, true);
+    auto add_op = relay::Op::Get("add");
+    (*reset_op_attr)(add_op, "FTVMStrategy");
+    (*reg_op_attr)("add", "FTVMStrategy", fgeneric, 10);
+
+//    relay::Var x = relay::Var("x",
+//                              TensorType({1, 3, 64, 64},
+//                                         DataType::Float(32)));
+    relay::Constant x = relay::Constant(runtime::NDArray::Empty({1, 3, 64, 64},
+                                                                 {kDLFloat, 32, 1},
+                                                                 {kDLCPU, 0}));
     relay::Constant y = relay::Constant(runtime::NDArray::Empty({1, 3, 64, 64},
                                                                 {kDLFloat, 32, 1},
                                                                 {kDLCPU, 0}));
