@@ -121,7 +121,7 @@ TEST(RelayPass, FoldConstant) {
                                                                 {kDLFloat, 32, 1},
                                                                 {kDLCPU, 0}));
     relay::Expr z = BuildAddExpr(x, y);
-//    relay::Expr output = BuildConvBNRelu(x, 3, 16, 1, 1, 1, 1, 3);
+//    relay::Expr z = BuildConvBNRelu(x, 3, 16, 1, 1, 1, 1, 3);
 //    std::string res = relay::AsText(IRModule::FromExpr(output), false);
 //    std::cout << res << std::endl;
 //    const PackedFunc* flower_call = runtime::Registry::Get("relay.backend.lower_call");
