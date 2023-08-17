@@ -45,3 +45,19 @@ TVM_REGISTER_GLOBAL("test.add_strategy")
     strategy.AddImplementation(fcompute, fschedule, "test.add_strategy", 10);
     return strategy;
 });
+
+void ResetAddOpStrategy() {
+    auto reg_op_attr = runtime::Registry::Get("ir.RegisterOpAttr");
+    ICHECK_NOTNULL(reg_op_attr);
+
+    auto reset_op_attr = runtime::Registry::Get("ir.OpResetAttr");
+    ICHECK_NOTNULL(reset_op_attr);
+
+    auto add_op_strategy = runtime::Registry::Get("test.add_strategy");
+    ICHECK_NOTNULL(add_op_strategy);
+
+    auto fgeneric = GenericFunc::Get("test.strategy_generic").set_default(*add_op_strategy, true);
+    auto add_op = relay::Op::Get("add");
+    (*reset_op_attr)(add_op, "FTVMStrategy");
+    (*reg_op_attr)("add", "FTVMStrategy", fgeneric, 10);
+}
