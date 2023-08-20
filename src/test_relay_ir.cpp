@@ -56,14 +56,16 @@ TEST(Relay, ConstantExpr) {
     int cols = 3;
 
     relay::Constant const1 = generate_constant_node(rows, cols, DataType::Int(32));
+    std::string res = relay::AsText(const1, false);
+    std::cout << res << std::endl;
 
-    std::cout << "the constant data:\n";
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            std::cout << static_cast<int32_t *>(const1->data->data)[i * cols + j] << " ";
-        }
-        std::cout << std::endl;
-    }
+//    std::cout << "the constant data:\n";
+//    for (int i = 0; i < rows; i++) {
+//        for (int j = 0; j < cols; j++) {
+//            std::cout << static_cast<int32_t *>(const1->data->data)[i * cols + j] << " ";
+//        }
+//        std::cout << std::endl;
+//    }
 
     const PackedFunc *make_relu = runtime::Registry::Get("relay.op.nn._make.relu");
     relay::Call call_relu1 = (*make_relu)(const1);
