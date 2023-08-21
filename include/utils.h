@@ -10,8 +10,6 @@
 #include <fstream>
 #include <iostream>
 
-#include "tvm/relay/expr.h"
-
 template<typename T>
 void random_matrix(T *matrix, int rows, int cols) {
     std::random_device rd;
@@ -28,7 +26,5 @@ void random_matrix(T *matrix, int rows, int cols) {
 }
 
 int string_to_file(const std::string &file_name, const std::string &str);
-
-bool check_json_roundtrip(const tvm::runtime::ObjectRef &expr);
 
 #endif //TVM_TEST_UTILS_H

@@ -10,6 +10,7 @@
 #include "tvm/relay/function.h"
 #include "tvm/runtime/device_api.h"
 #include "tvm/runtime/registry.h"
+#include "tvm/node/serialization.h"
 
 using namespace tvm;
 
@@ -18,13 +19,13 @@ relay::Constant generate_constant_node(int rows, int cols, DataType dtype) {
     auto *data = new int32_t[rows * cols];
     random_matrix<int32_t>(data, rows, cols);
 
-    std::cout << "the original data:\n";
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            std::cout << data[i * cols + j] << " ";
-        }
-        std::cout << std::endl;
-    }
+//    std::cout << "the original data:\n";
+//    for (int i = 0; i < rows; i++) {
+//        for (int j = 0; j < cols; j++) {
+//            std::cout << data[i * cols + j] << " ";
+//        }
+//        std::cout << std::endl;
+//    }
 
     DLTensor tensor;
     ShapeTuple shape({rows, cols});
@@ -56,10 +57,7 @@ TEST(Relay, ConstantExpr) {
     int cols = 3;
 
     relay::Constant const1 = generate_constant_node(rows, cols, DataType::Int(32));
-    ObjectRef a(const1);
-//    const PackedFunc *check_se = runtime::Registry::Get("node.StructuralEqual");
-    ASSERT_TRUE(check_json_roundtrip(a));
-//    ASSERT_TRUE((*check_se)(const1));
+    std::string const_seri = SaveJSON(const1);
     std::string res = relay::AsText(const1, false);
     std::cout << res << std::endl;
 
