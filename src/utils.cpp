@@ -20,8 +20,14 @@ int string_to_file(const std::string &file_name, const std::string &str) {
     return 0;
 }
 
-void check_json_roundtrip(const runtime::ObjectRef& expr) {
-    std::string json_str = SaveJSON(expr);
-    runtime::ObjectRef back = LoadJSON(json_str);
-    ICHECK(StructuralEqual()(expr, back));
+bool check_json_roundtrip(const ObjectRef &expr) {
+//    std::string json_str = SaveJSON(expr);
+//    std::cout << "json str:\n" << json_str;
+    const PackedFunc *check_se = runtime::Registry::Get("node.StructuralEqual");
+    ObjectRef back = LoadJSON(SaveJSON(expr));
+    std::cout << relay::AsText(expr, false);
+    std::cout << relay::AsText(back, false);
+    return (*check_se)(back, expr, true, true);
+//    Optional<ObjectPathPair> first_mismatch;
+//    return SEqualHandlerDefault(false, &first_mismatch, false).Equal(expr, back, false);
 }
