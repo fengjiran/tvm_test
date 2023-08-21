@@ -3,8 +3,10 @@
 //
 
 #include "utils.h"
-#include "tvm/relay/expr.h"
-#include
+#include "tvm/node/serialization.h"
+#include "tvm/node/structural_equal.h"
+
+using namespace tvm;
 
 int string_to_file(const std::string &file_name, const std::string &str) {
     std::ofstream outfile;
@@ -18,4 +20,8 @@ int string_to_file(const std::string &file_name, const std::string &str) {
     return 0;
 }
 
-void check_json_roundtrip()
+void check_json_roundtrip(const runtime::ObjectRef& expr) {
+    std::string json_str = SaveJSON(expr);
+    runtime::ObjectRef back = LoadJSON(json_str);
+    ICHECK(StructuralEqual()(expr, back));
+}
