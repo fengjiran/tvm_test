@@ -3,7 +3,8 @@
 //
 
 #include "utils.h"
-
+#include "tvm/relay/expr.h"
+#include
 
 int string_to_file(const std::string &file_name, const std::string &str) {
     std::ofstream outfile;
@@ -16,3 +17,5 @@ int string_to_file(const std::string &file_name, const std::string &str) {
     outfile.close();
     return 0;
 }
+
+void check_json_roundtrip()
