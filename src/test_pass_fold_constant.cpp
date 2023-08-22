@@ -10,18 +10,18 @@
 #include "test_op_strategy.h"
 
 using namespace tvm;
-using namespace tvm::relay;
+//using namespace tvm::relay;
 
 /*! \brief Result of \p GetOnDeviceProps. */
 struct OnDeviceProps {
-    Expr body;  // = null
+    relay::Expr body;  // = null
     VirtualDevice virtual_device = VirtualDevice::FullyUnconstrained();
     bool constrain_result = false;
     bool constrain_body = false;
 
     OnDeviceProps() = default;
 
-    OnDeviceProps(Expr body, VirtualDevice virtual_device, bool constrain_result, bool constrain_body)
+    OnDeviceProps(relay::Expr body, VirtualDevice virtual_device, bool constrain_result, bool constrain_body)
             : body(std::move(body)),
               virtual_device(std::move(virtual_device)),
               constrain_result(constrain_result),
@@ -37,11 +37,11 @@ const Op &OnDeviceOp() {
     return op;
 }
 
-OnDeviceProps GetOnDeviceProps(const CallNode *call_node) {
+OnDeviceProps GetOnDeviceProps(const relay::CallNode *call_node) {
     if (call_node->op == OnDeviceOp()) {
         ICHECK_EQ(call_node->args.size(), 1) << "on_device expects one argument";
         ICHECK(call_node->attrs.defined()) << "on_device requires attributes";
-        const auto *on_device_attrs = call_node->attrs.as<OnDeviceAttrs>();
+        const auto *on_device_attrs = call_node->attrs.as<relay::OnDeviceAttrs>();
         ICHECK(on_device_attrs != nullptr) << "on_device requires OnDeviceAttrs";
         return {call_node->args[0], on_device_attrs->virtual_device, on_device_attrs->constrain_result,
                 on_device_attrs->constrain_body};
@@ -49,8 +49,8 @@ OnDeviceProps GetOnDeviceProps(const CallNode *call_node) {
     return {};
 }
 
-OnDeviceProps GetOnDeviceProps(const Expr &expr) {
-    if (const auto *call_node = expr.as<CallNode>()) {
+OnDeviceProps GetOnDeviceProps(const relay::Expr &expr) {
+    if (const auto *call_node = expr.as<relay::CallNode>()) {
         return GetOnDeviceProps(call_node);
     }
     return {};
@@ -61,7 +61,7 @@ OnDeviceProps GetOnDeviceProps(const Expr &expr) {
  * any "on_device" annotations.
  */
 template<typename NodeType>
-const NodeType *AsIgnoringOnDevice(const Expr &expr) {
+const NodeType *AsIgnoringOnDevice(const relay::Expr &expr) {
     const auto *node = expr.as<NodeType>();
     if (node != nullptr) {
         return node;
@@ -78,22 +78,28 @@ const NodeType *AsIgnoringOnDevice(const Expr &expr) {
  * annotation CallNode (which serves only to associate an \p VirtualDevice to the constant and has
  * no operational effect).
  */
-bool IsSimpleConstant(const Expr &expr) {
-    return AsIgnoringOnDevice<ConstantNode>(expr) != nullptr;
+bool IsSimpleConstant(const relay::Expr &expr) {
+    return AsIgnoringOnDevice<relay::ConstantNode>(expr) != nullptr;
 }
 
 /*!
  * \brief Returns whether \p expr \p IsSimpleConstant directly or is a tuple of
  * \p IsComplexConstant expressions.
  */
-bool IsComplexConstant(const Expr &expr) {
+bool IsComplexConstant(const relay::Expr &expr) {
     if (IsSimpleConstant(expr)) {
         return true;
-    } else if (const auto *tuple_node = AsIgnoringOnDevice<TupleNode>(expr)) {
+    } else if (const auto *tuple_node = AsIgnoringOnDevice<relay::TupleNode>(expr)) {
         return std::all_of(tuple_node->fields.begin(), tuple_node->fields.end(), IsComplexConstant);
     } else {
         return false;
     }
+}
+
+relay::Call AnnotateExpr(relay::Expr body, VirtualDevice virtual_device, bool constrain_result, bool constrain_body) {
+    const PackedFunc *fp = runtime::Registry::Get("relay.op.annotation._make.OnDevice");
+    ICHECK_NOTNULL(fp);
+    return (*fp)(body, virtual_device, constrain_result, constrain_body);
 }
 
 
@@ -115,8 +121,8 @@ TEST(RelayPass, FoldConstant) {
 //                              TensorType({1, 3, 64, 64},
 //                                         DataType::Float(32)));
     relay::Constant x = relay::Constant(runtime::NDArray::Empty({1, 3, 64, 64},
-                                                                 {kDLFloat, 32, 1},
-                                                                 {kDLCPU, 0}));
+                                                                {kDLFloat, 32, 1},
+                                                                {kDLCPU, 0}));
     relay::Constant y = relay::Constant(runtime::NDArray::Empty({1, 3, 64, 64},
                                                                 {kDLFloat, 32, 1},
                                                                 {kDLCPU, 0}));
@@ -126,7 +132,7 @@ TEST(RelayPass, FoldConstant) {
 //    std::cout << res << std::endl;
 //    const PackedFunc* flower_call = runtime::Registry::Get("relay.backend.lower_call");
 //    ICHECK_NOTNULL(flower_call);
-    const PackedFunc* fp = runtime::Registry::Get("relay._transform.FoldConstantExpr");
+    const PackedFunc *fp = runtime::Registry::Get("relay._transform.FoldConstantExpr");
 
     relay::Expr after = (*fp)(z, IRModule::FromExpr(z), false);
     std::cout << relay::AsText(IRModule::FromExpr(after), false) << std::endl;
