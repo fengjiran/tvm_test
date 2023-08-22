@@ -58,6 +58,7 @@ TEST(Relay, ConstantExpr) {
 
     relay::Constant const1 = generate_constant_node(rows, cols, DataType::Int(32));
     std::string const_seri = SaveJSON(const1);
+//    ICHECK(tvm::StructuralEqual()(const1, LoadJSON(const_seri)));
     std::string res = relay::AsText(const1, false);
     std::cout << res << std::endl;
 

@@ -8,6 +8,7 @@
 #include "tvm/target/virtual_device.h"
 #include "build_relay_model.h"
 #include "test_op_strategy.h"
+#include "make_op.h"
 
 using namespace tvm;
 //using namespace tvm::relay;
@@ -106,7 +107,7 @@ relay::Call AnnotateExpr(relay::Expr body,
 }
 
 
-TEST(RelayPass, ConstantCheck) {
+TEST(FoldConstant, ConstantCheck) {
     relay::Constant c1 = relay::Constant(runtime::NDArray::Empty({1, 16, 64, 64},
                                                                  {kDLFloat, 32, 1},
                                                                  {kDLCPU, 0}));
@@ -117,7 +118,19 @@ TEST(RelayPass, ConstantCheck) {
     ICHECK(!IsComplexConstant(x1));
 }
 
-TEST(RelayPass, FoldConstant) {
+TEST(FoldConstant, FoldConstNode) {
+    DLDataType dtype{kDLFloat, 32, 1};
+    Device dev{kDLCPU, 0};
+
+    auto before = [dtype, dev]() {
+        relay::Constant c = relay::Constant(runtime::NDArray::Empty({3}, dtype, dev));
+        relay::Var x = relay::Var("x", TensorType({1, 2, 3}, DataType::Float(32)));
+        relay::Expr y = relay::MakeAdd(c, c);
+
+    };
+}
+
+TEST(FoldConstant, FoldConstantExpr) {
     ResetAddOpStrategy();
     ResetReluOpStrategy();
 //    relay::Var x = relay::Var("x",
