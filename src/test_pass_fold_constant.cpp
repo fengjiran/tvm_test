@@ -6,6 +6,7 @@
 #include "tvm/relay/op.h"
 #include "tvm/relay/attrs/on_device.h"
 #include "tvm/target/virtual_device.h"
+#include "tvm/runtime/device_api.h"
 #include "build_relay_model.h"
 #include "test_op_strategy.h"
 #include "make_op.h"
@@ -106,6 +107,23 @@ relay::Call AnnotateExpr(relay::Expr body,
     return (*fp)(body, virtual_device, constrain_result, constrain_body);
 }
 
+relay::Constant GenerateScalarConstant(float value) {
+    DLTensor tensor;
+    DataType dtype{kDLFloat, 32, 1};
+    DLDevice dev{kDLCPU, 0};
+    ShapeTuple shape{};
+    tensor.data = &value;
+    tensor.ndim = static_cast<int>(shape.size());
+    tensor.shape = const_cast<ShapeTuple::index_type *>(shape.data());
+    tensor.dtype = dtype.operator DLDataType();
+    tensor.strides = nullptr;
+    tensor.byte_offset = runtime::kAllocAlignment -
+                         reinterpret_cast<size_t>(static_cast<char *>(tensor.data)) % runtime::kAllocAlignment;
+    tensor.device = dev;
+    runtime::NDArray x = runtime::NDArray::FromExternalDLTensor(tensor);
+    return relay::Constant(x, Span());
+}
+
 
 TEST(FoldConstant, ConstantCheck) {
     relay::Constant c1 = relay::Constant(runtime::NDArray::Empty({1, 16, 64, 64},
@@ -121,6 +139,7 @@ TEST(FoldConstant, ConstantCheck) {
 TEST(FoldConstant, FoldConstNode) {
     DLDataType dtype{kDLFloat, 32, 1};
     Device dev{kDLCPU, 0};
+    relay::Constant xx = GenerateScalarConstant(2);
 
     auto before = [dtype, dev]() {
         relay::Constant c = relay::Constant(runtime::NDArray::Empty({3}, dtype, dev));
