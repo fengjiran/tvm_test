@@ -139,9 +139,10 @@ TEST(FoldConstant, ConstantCheck) {
 TEST(FoldConstant, FoldConstNode) {
     DLDataType dtype{kDLFloat, 32, 1};
     Device dev{kDLCPU, 0};
+    auto c_data = runtime::NDArray::Empty({3}, dtype, dev);
 
-    auto before = [dtype, dev]() {
-        auto c = relay::Constant(runtime::NDArray::Empty({3}, dtype, dev));
+    auto before = [&c_data]() {
+        auto c = relay::Constant(c_data);
         auto x = relay::Var("x", TensorType({1, 2, 3}, DataType::Float(32)));
         auto y = relay::MakeAdd(c, c);
         y = relay::MakeMultiply(y, GenerateScalarConstant(2));
@@ -150,7 +151,13 @@ TEST(FoldConstant, FoldConstNode) {
         return relay::Function({x}, z, relay::Type(), {});
     };
 
-
+    auto expected = [&c_data](){
+        auto x = relay::Var("x", TensorType({1, 2, 3}, DataType::Float(32)));
+//        auto c_folded = (c_data + c_data) * 2;
+    };
+    const PackedFunc *fp = runtime::Registry::Get("relay._transform.FoldConstantExpr");
+    auto z = before();
+//    relay::Expr after = (*fp)(z, IRModule::FromExpr(z), false);
 }
 
 TEST(FoldConstant, FoldConstantExpr) {

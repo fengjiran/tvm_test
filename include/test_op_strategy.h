@@ -9,4 +9,6 @@ void ResetAddOpStrategy();
 
 void ResetReluOpStrategy();
 
+void ResetMultiplyOpStrategy();
+
 #endif //TVM_TEST_TEST_OP_STRATEGY_H

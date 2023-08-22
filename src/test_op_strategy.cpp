@@ -5,6 +5,7 @@
 #include "tvm/relay/op.h"
 #include "tvm/relay/op_strategy.h"
 #include "tvm/topi/generic/injective.h"
+#include "tvm/topi/generic/default.h"
 #include "tvm/topi/broadcast.h"
 #include "tvm/topi/nn.h"
 
@@ -38,7 +39,8 @@ TVM_REGISTER_GLOBAL("test.add_strategy")
     FTVMSchedule fschedule = [](const Attrs &attrs, const Array<te::Tensor> &outs,
                                 const Target &target) {
         With<Target> target_scope(target);
-        return topi::generic::schedule_injective(target, outs);
+//        return topi::generic::schedule_injective(target, outs);
+        return topi::generic::default_schedule(target, outs);
     };
 
     auto n = make_object<OpStrategyNode>();
@@ -58,12 +60,34 @@ TVM_REGISTER_GLOBAL("test.relu_strategy")
     FTVMSchedule fschedule = [](const Attrs &attrs, const Array<te::Tensor> &outs,
                                 const Target &target) {
         With<Target> target_scope(target);
-        return topi::generic::schedule_injective(target, outs);
+//        return topi::generic::schedule_injective(target, outs);
+        return topi::generic::default_schedule(target, outs);
     };
 
     auto n = make_object<OpStrategyNode>();
     auto strategy = relay::OpStrategy(std::move(n));
     strategy.AddImplementation(fcompute, fschedule, "test.relu_strategy", 10);
+    return strategy;
+});
+
+TVM_REGISTER_GLOBAL("test.multiply_strategy")
+.set_body_typed([](const Attrs &attrs, const Array<te::Tensor> &inputs, const Type &out_type,
+                   const Target &target) {
+    FTVMCompute fcompute = [](const Attrs &attrs, const Array<te::Tensor> &inputs,
+                              const Type &out_type) -> Array<te::Tensor> {
+        ICHECK_EQ(inputs.size(), 2U);
+        return {topi::multiply(inputs[0], inputs[1])};
+    };
+    FTVMSchedule fschedule = [](const Attrs &attrs, const Array<te::Tensor> &outs,
+                                const Target &target) {
+        With<Target> target_scope(target);
+//        return topi::generic::schedule_injective(target, outs);
+        return topi::generic::default_schedule(target, outs);
+    };
+
+    auto n = make_object<OpStrategyNode>();
+    auto strategy = relay::OpStrategy(std::move(n));
+    strategy.AddImplementation(fcompute, fschedule, "test.multiply_strategy", 10);
     return strategy;
 });
 
@@ -98,3 +122,20 @@ void ResetReluOpStrategy() {
     (*reset_op_attr)(relu_op, "FTVMStrategy");
     (*reg_op_attr)("nn.relu", "FTVMStrategy", fgeneric, 10);
 }
+
+void ResetMultiplyOpStrategy() {
+    auto reg_op_attr = runtime::Registry::Get("ir.RegisterOpAttr");
+    ICHECK_NOTNULL(reg_op_attr);
+
+    auto reset_op_attr = runtime::Registry::Get("ir.OpResetAttr");
+    ICHECK_NOTNULL(reset_op_attr);
+
+    auto multiply_op_strategy = runtime::Registry::Get("test.multiply_strategy");
+    ICHECK_NOTNULL(multiply_op_strategy);
+
+    auto fgeneric = GenericFunc::Get("test.add_generic_strategy").set_default(*multiply_op_strategy, true);
+    auto multiply_op = relay::Op::Get("multiply");
+    (*reset_op_attr)(multiply_op, "FTVMStrategy");
+    (*reg_op_attr)("add", "FTVMStrategy", fgeneric, 10);
+}
+

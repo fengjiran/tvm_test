@@ -58,7 +58,7 @@ namespace tvm::relay {
     }
 
     inline Expr MakeMultiply(Expr lhs, Expr rhs) {
-        static const Op &op = Op::Get("relay.op._make.multiply");
+        static const Op &op = Op::Get("multiply");
         return Call(op, {std::move(lhs), std::move(rhs)}, Attrs(), {});
     }
 }
