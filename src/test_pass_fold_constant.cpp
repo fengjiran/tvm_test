@@ -96,7 +96,10 @@ bool IsComplexConstant(const relay::Expr &expr) {
     }
 }
 
-relay::Call AnnotateExpr(relay::Expr body, VirtualDevice virtual_device, bool constrain_result, bool constrain_body) {
+relay::Call AnnotateExpr(relay::Expr body,
+                         VirtualDevice virtual_device,
+                         bool constrain_result = true,
+                         bool constrain_body = true) {
     const PackedFunc *fp = runtime::Registry::Get("relay.op.annotation._make.OnDevice");
     ICHECK_NOTNULL(fp);
     return (*fp)(body, virtual_device, constrain_result, constrain_body);
