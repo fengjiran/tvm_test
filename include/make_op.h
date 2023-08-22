@@ -56,6 +56,11 @@ namespace tvm::relay {
                     {std::move(data), std::move(gamma), std::move(beta), std::move(moving_mean), std::move(moving_var)},
                     Attrs(attrs), {});
     }
+
+    inline Expr MakeMultiply(Expr lhs, Expr rhs) {
+        static const Op &op = Op::Get("relay.op._make.multiply");
+        return Call(op, {std::move(lhs), std::move(rhs)}, Attrs(), {});
+    }
 }
 
 #endif //TVM_TEST_MAKE_OP_H
