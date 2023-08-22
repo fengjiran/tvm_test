@@ -137,6 +137,8 @@ TEST(FoldConstant, ConstantCheck) {
 }
 
 TEST(FoldConstant, FoldConstNode) {
+    ResetAddOpStrategy();
+    ResetMultiplyOpStrategy();
     DLDataType dtype{kDLFloat, 32, 1};
     Device dev{kDLCPU, 0};
     auto c_data = runtime::NDArray::Empty({3}, dtype, dev);
@@ -157,7 +159,7 @@ TEST(FoldConstant, FoldConstNode) {
     };
     const PackedFunc *fp = runtime::Registry::Get("relay._transform.FoldConstantExpr");
     auto z = before();
-//    relay::Expr after = (*fp)(z, IRModule::FromExpr(z), false);
+    relay::Expr after = (*fp)(z, IRModule::FromExpr(z), false);
 }
 
 TEST(FoldConstant, FoldConstantExpr) {

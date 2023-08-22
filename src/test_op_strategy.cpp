@@ -136,6 +136,5 @@ void ResetMultiplyOpStrategy() {
     auto fgeneric = GenericFunc::Get("test.add_generic_strategy").set_default(*multiply_op_strategy, true);
     auto multiply_op = relay::Op::Get("multiply");
     (*reset_op_attr)(multiply_op, "FTVMStrategy");
-    (*reg_op_attr)("add", "FTVMStrategy", fgeneric, 10);
+    (*reg_op_attr)("multiply", "FTVMStrategy", fgeneric, 10);
 }
-
