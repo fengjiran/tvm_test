@@ -8,6 +8,7 @@
 #include "tvm/topi/generic/default.h"
 #include "tvm/topi/broadcast.h"
 #include "tvm/topi/nn.h"
+#include "test_op_strategy.h"
 
 using namespace tvm;
 using namespace tvm::relay;
@@ -108,50 +109,50 @@ void ResetOpStrategy(const std::string &op_name) {
     (*reg_op_attr)(op_name, "FTVMStrategy", fgeneric, 10);
 }
 
-void ResetAddOpStrategy() {
-    auto reg_op_attr = runtime::Registry::Get("ir.RegisterOpAttr");
-    ICHECK_NOTNULL(reg_op_attr);
+//void ResetAddOpStrategy() {
+//    auto reg_op_attr = runtime::Registry::Get("ir.RegisterOpAttr");
+//    ICHECK_NOTNULL(reg_op_attr);
+//
+//    auto reset_op_attr = runtime::Registry::Get("ir.OpResetAttr");
+//    ICHECK_NOTNULL(reset_op_attr);
+//
+//    auto add_op_strategy = runtime::Registry::Get("test.add_strategy");
+//    ICHECK_NOTNULL(add_op_strategy);
+//
+//    auto fgeneric = GenericFunc::Get("test.add_generic_strategy").set_default(*add_op_strategy, true);
+//    auto add_op = relay::Op::Get("add");
+//    (*reset_op_attr)(add_op, "FTVMStrategy");
+//    (*reg_op_attr)("add", "FTVMStrategy", fgeneric, 10);
+//}
 
-    auto reset_op_attr = runtime::Registry::Get("ir.OpResetAttr");
-    ICHECK_NOTNULL(reset_op_attr);
+//void ResetReluOpStrategy() {
+//    auto reg_op_attr = runtime::Registry::Get("ir.RegisterOpAttr");
+//    ICHECK_NOTNULL(reg_op_attr);
+//
+//    auto reset_op_attr = runtime::Registry::Get("ir.OpResetAttr");
+//    ICHECK_NOTNULL(reset_op_attr);
+//
+//    auto relu_op_strategy = runtime::Registry::Get("test.relu_strategy");
+//    ICHECK_NOTNULL(relu_op_strategy);
+//
+//    auto fgeneric = GenericFunc::Get("test.relu_generic_strategy").set_default(*relu_op_strategy, true);
+//    auto relu_op = relay::Op::Get("nn.relu");
+//    (*reset_op_attr)(relu_op, "FTVMStrategy");
+//    (*reg_op_attr)("nn.relu", "FTVMStrategy", fgeneric, 10);
+//}
 
-    auto add_op_strategy = runtime::Registry::Get("test.add_strategy");
-    ICHECK_NOTNULL(add_op_strategy);
-
-    auto fgeneric = GenericFunc::Get("test.add_generic_strategy").set_default(*add_op_strategy, true);
-    auto add_op = relay::Op::Get("add");
-    (*reset_op_attr)(add_op, "FTVMStrategy");
-    (*reg_op_attr)("add", "FTVMStrategy", fgeneric, 10);
-}
-
-void ResetReluOpStrategy() {
-    auto reg_op_attr = runtime::Registry::Get("ir.RegisterOpAttr");
-    ICHECK_NOTNULL(reg_op_attr);
-
-    auto reset_op_attr = runtime::Registry::Get("ir.OpResetAttr");
-    ICHECK_NOTNULL(reset_op_attr);
-
-    auto relu_op_strategy = runtime::Registry::Get("test.relu_strategy");
-    ICHECK_NOTNULL(relu_op_strategy);
-
-    auto fgeneric = GenericFunc::Get("test.relu_generic_strategy").set_default(*relu_op_strategy, true);
-    auto relu_op = relay::Op::Get("nn.relu");
-    (*reset_op_attr)(relu_op, "FTVMStrategy");
-    (*reg_op_attr)("nn.relu", "FTVMStrategy", fgeneric, 10);
-}
-
-void ResetMultiplyOpStrategy() {
-    auto reg_op_attr = runtime::Registry::Get("ir.RegisterOpAttr");
-    ICHECK_NOTNULL(reg_op_attr);
-
-    auto reset_op_attr = runtime::Registry::Get("ir.OpResetAttr");
-    ICHECK_NOTNULL(reset_op_attr);
-
-    auto multiply_op_strategy = runtime::Registry::Get("test.multiply_strategy");
-    ICHECK_NOTNULL(multiply_op_strategy);
-
-    auto fgeneric = GenericFunc::Get("test.multiply_generic_strategy").set_default(*multiply_op_strategy, true);
-    auto multiply_op = relay::Op::Get("multiply");
-    (*reset_op_attr)(multiply_op, "FTVMStrategy");
-    (*reg_op_attr)("multiply", "FTVMStrategy", fgeneric, 10);
-}
+//void ResetMultiplyOpStrategy() {
+//    auto reg_op_attr = runtime::Registry::Get("ir.RegisterOpAttr");
+//    ICHECK_NOTNULL(reg_op_attr);
+//
+//    auto reset_op_attr = runtime::Registry::Get("ir.OpResetAttr");
+//    ICHECK_NOTNULL(reset_op_attr);
+//
+//    auto multiply_op_strategy = runtime::Registry::Get("test.multiply_strategy");
+//    ICHECK_NOTNULL(multiply_op_strategy);
+//
+//    auto fgeneric = GenericFunc::Get("test.multiply_generic_strategy").set_default(*multiply_op_strategy, true);
+//    auto multiply_op = relay::Op::Get("multiply");
+//    (*reset_op_attr)(multiply_op, "FTVMStrategy");
+//    (*reg_op_attr)("multiply", "FTVMStrategy", fgeneric, 10);
+//}

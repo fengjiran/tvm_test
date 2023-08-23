@@ -5,11 +5,11 @@
 #ifndef TVM_TEST_TEST_OP_STRATEGY_H
 #define TVM_TEST_TEST_OP_STRATEGY_H
 
-void ResetAddOpStrategy();
+//void ResetAddOpStrategy();
 
-void ResetReluOpStrategy();
+//void ResetReluOpStrategy();
 
-void ResetMultiplyOpStrategy();
+//void ResetMultiplyOpStrategy();
 
 void ResetOpStrategy(const std::string &op_name);
 

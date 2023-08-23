@@ -137,8 +137,6 @@ TEST(FoldConstant, ConstantCheck) {
 }
 
 TEST(FoldConstant, FoldConstNode) {
-//    ResetAddOpStrategy();
-//    ResetMultiplyOpStrategy();
     ResetOpStrategy("add");
     ResetOpStrategy("multiply");
     DLDataType dtype{kDLFloat, 32, 1};
@@ -165,10 +163,8 @@ TEST(FoldConstant, FoldConstNode) {
 }
 
 TEST(FoldConstant, FoldConstantExpr) {
-//    ResetAddOpStrategy();
     ResetOpStrategy("nn.relu");
     ResetOpStrategy("add");
-//    ResetReluOpStrategy();
 //    relay::Var x = relay::Var("x",
 //                              TensorType({1, 3, 64, 64},
 //                                         DataType::Float(32)));
