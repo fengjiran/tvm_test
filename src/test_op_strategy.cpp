@@ -49,7 +49,7 @@ TVM_REGISTER_GLOBAL("test.add_strategy")
     return strategy;
 });
 
-TVM_REGISTER_GLOBAL("test.relu_strategy")
+TVM_REGISTER_GLOBAL("test.nn.relu_strategy")
 .set_body_typed([](const Attrs &attrs, const Array<te::Tensor> &inputs, const Type &out_type,
                    const Target &target) {
     FTVMCompute fcompute = [](const Attrs &attrs, const Array<te::Tensor> &inputs,
@@ -66,7 +66,7 @@ TVM_REGISTER_GLOBAL("test.relu_strategy")
 
     auto n = make_object<OpStrategyNode>();
     auto strategy = relay::OpStrategy(std::move(n));
-    strategy.AddImplementation(fcompute, fschedule, "test.relu_strategy", 10);
+    strategy.AddImplementation(fcompute, fschedule, "test.nn.relu_strategy", 10);
     return strategy;
 });
 
@@ -90,6 +90,23 @@ TVM_REGISTER_GLOBAL("test.multiply_strategy")
     strategy.AddImplementation(fcompute, fschedule, "test.multiply_strategy", 10);
     return strategy;
 });
+
+void ResetOpStrategy(const std::string &op_name) {
+    auto reg_op_attr = runtime::Registry::Get("ir.RegisterOpAttr");
+    ICHECK_NOTNULL(reg_op_attr);
+
+    auto reset_op_attr = runtime::Registry::Get("ir.OpResetAttr");
+    ICHECK_NOTNULL(reset_op_attr);
+
+    auto op_strategy = runtime::Registry::Get("test." + op_name + "_strategy");
+    ICHECK_NOTNULL(op_strategy);
+
+    auto fgeneric = GenericFunc::Get("test." + op_name + "_generic_strategy")
+            .set_default(*op_strategy, true);
+    auto op = relay::Op::Get(op_name);
+    (*reset_op_attr)(op, "FTVMStrategy");
+    (*reg_op_attr)(op_name, "FTVMStrategy", fgeneric, 10);
+}
 
 void ResetAddOpStrategy() {
     auto reg_op_attr = runtime::Registry::Get("ir.RegisterOpAttr");
