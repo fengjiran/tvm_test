@@ -6,6 +6,7 @@
 #define TVM_TEST_MAKE_OP_H
 
 #include "tvm/relay/attrs/nn.h"
+#include "tvm/relay/attrs/transform.h"
 #include "tvm/relay/op.h"
 
 #include <string>
@@ -60,6 +61,13 @@ namespace tvm::relay {
     inline Expr MakeMultiply(Expr lhs, Expr rhs) {
         static const Op &op = Op::Get("multiply");
         return Call(op, {std::move(lhs), std::move(rhs)}, Attrs(), {});
+    }
+
+    inline Expr MakeConcatenate(Expr data, int axis) {
+        auto attrs = make_object<ConcatenateAttrs>();
+        attrs->axis = axis;
+        static const Op &op = Op::Get("concatenate");
+        return Call(op, {std::move(data)}, Attrs(attrs), {});
     }
 }
 
