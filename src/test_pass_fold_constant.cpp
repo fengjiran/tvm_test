@@ -153,15 +153,10 @@ TEST(FoldConstant, FoldConstNode) {
         return relay::Function({x}, z, relay::Type(), {});
     };
 
-    auto expected = [&c_data]() {
-        auto x = relay::Var("x", TensorType({1, 2, 3}, DataType::Float(32)));
-//        auto c_folded = (c_data + c_data) * 2;
-    };
     const PackedFunc *fp = runtime::Registry::Get("relay._transform.FoldConstantExpr");
     ICHECK_NOTNULL(fp);
     auto original_model = before();
     std::cout << "Original model: \n" << relay::AsText(IRModule::FromExpr(original_model), false) << std::endl;
-//    relay::Expr after = (*fp)(z, IRModule::FromExpr(z), false);
 }
 
 TEST(FoldConstant, FoldConstantExpr) {

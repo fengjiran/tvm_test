@@ -4,6 +4,7 @@
 #include "tvm/relay/expr.h"
 #include "tvm/relay/op.h"
 #include "tvm/relay/op_strategy.h"
+#include "tvm/relay/attrs/transform.h"
 #include "tvm/topi/generic/injective.h"
 #include "tvm/topi/generic/default.h"
 #include "tvm/topi/broadcast.h"
@@ -90,6 +91,31 @@ TVM_REGISTER_GLOBAL("test.multiply_strategy")
     auto strategy = relay::OpStrategy(std::move(n));
     strategy.AddImplementation(fcompute, fschedule, "test.multiply_strategy", 10);
     return strategy;
+});
+
+TVM_REGISTER_GLOBAL("test.concatenate_strategy")
+.set_body_typed([](const Attrs &attrs, const Array<te::Tensor> &inputs, const Type &out_type,
+                   const Target &target) {
+    FTVMCompute fcompute = [](const Attrs &attrs, const Array<te::Tensor> &inputs,
+                              const Type &out_type) -> Array<te::Tensor> {
+        const auto *param = attrs.as<ConcatenateAttrs>();
+        ICHECK(param != nullptr);
+        return {topi::concatenate(inputs, param->axis)};
+    };
+
+    FTVMSchedule fschedule = [](const Attrs &attrs, const Array<te::Tensor> &outs,
+                                const Target &target) {
+        With<Target> target_scope(target);
+//        return topi::generic::schedule_injective(target, outs);
+        return topi::generic::default_schedule(target, outs);
+    };
+
+    auto n = make_object<OpStrategyNode>();
+    auto strategy = relay::OpStrategy(std::move(n));
+    strategy.AddImplementation(fcompute, fschedule, "test.concatenate_strategy", 10);
+    return strategy;
+
+
 });
 
 void ResetOpStrategy(const std::string &op_name) {
