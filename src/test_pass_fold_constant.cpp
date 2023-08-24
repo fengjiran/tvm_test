@@ -156,7 +156,13 @@ TEST(FoldConstant, FoldConstNode) {
     const PackedFunc *fp = runtime::Registry::Get("relay._transform.FoldConstantExpr");
     ICHECK_NOTNULL(fp);
     auto original_model = before();
-    std::cout << "Original model: \n" << relay::AsText(IRModule::FromExpr(original_model), false) << std::endl;
+    std::cout << "Original model: \n"
+              << relay::AsText(IRModule::FromExpr(original_model), false)
+              << std::endl;
+    auto after = (*fp)(original_model, IRModule::FromExpr(original_model), false);
+    std::cout << "After fold constant pass: \n"
+              << relay::AsText(IRModule::FromExpr(after), false)
+              << std::endl;
 }
 
 TEST(FoldConstant, FoldConstantExpr) {
