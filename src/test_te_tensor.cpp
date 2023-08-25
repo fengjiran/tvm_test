@@ -21,6 +21,8 @@ TEST(TE, Tensor) {
         auto B_indices = Array<tir::Var>{idx[1], idx[2]};
         return A(A_indices) * B(B_indices);
     };
-    auto T = te::compute({m, n, l}, fcompute);
-
+    auto T = te::compute({m, n, l}, fcompute, "test.compute");
+    auto x = T->op;
+    std::cout << "The compute tensor:\n"
+              << T << std::endl;
 }
