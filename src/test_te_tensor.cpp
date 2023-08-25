@@ -22,4 +22,5 @@ TEST(TE, Tensor) {
         return A(A_indices) * B(B_indices);
     };
     auto T = te::compute({m, n, l}, fcompute);
+
 }
