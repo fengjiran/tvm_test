@@ -18,7 +18,7 @@ TEST(TE, Tensor) {
     auto fcompute = [&](const Array<tir::Var> &idx) {
         ICHECK(idx.size() == 3);
         auto A_indices = Array<tir::Var>{idx[0], idx[2]};
-        auto B_indices = Array<tir::Var>{idx[0], idx[2]};
+        auto B_indices = Array<tir::Var>{idx[1], idx[2]};
         return A(A_indices) * B(B_indices);
     };
     auto T = te::compute({m, n, l}, fcompute);
