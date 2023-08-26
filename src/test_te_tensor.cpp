@@ -23,6 +23,7 @@ TEST(TE, Tensor) {
     };
     auto T = te::compute({m, n, l}, fcompute, "test.compute");
     auto body = Downcast<te::ComputeOp>(T->op)->body;
+    ASSERT_TRUE(A->op->IsInstance<te::PlaceholderOpNode>());
     std::cout << "The compute tensor:\n"
               << T << std::endl;
     std::cout << "Tensor shape: " << T->shape << std::endl;
