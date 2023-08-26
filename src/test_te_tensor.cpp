@@ -22,7 +22,11 @@ TEST(TE, Tensor) {
         return A(A_indices) * B(B_indices);
     };
     auto T = te::compute({m, n, l}, fcompute, "test.compute");
-    auto x = T->op;
+    auto body = Downcast<te::ComputeOp>(T->op)->body;
     std::cout << "The compute tensor:\n"
               << T << std::endl;
+    std::cout << "Tensor shape: " << T->shape << std::endl;
+    std::cout << "The tensor compute body:\n"
+              << body << std::endl;
+
 }
