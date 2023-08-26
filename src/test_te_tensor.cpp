@@ -5,6 +5,7 @@
 #include "tvm/te/tensor.h"
 #include "tvm/te/operation.h"
 #include "tvm/tir/var.h"
+#include "tvm/tir/op.h"
 
 using namespace tvm;
 
@@ -29,5 +30,8 @@ TEST(TE, Tensor) {
     std::cout << "Tensor shape: " << T->shape << std::endl;
     std::cout << "The tensor compute body:\n"
               << body << std::endl;
+}
 
+TEST(TE, ZeroRank) {
+    //
 }
