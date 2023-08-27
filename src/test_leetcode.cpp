@@ -15,6 +15,7 @@ TEST(Sort, SortCmpFunc) {
 
     std::vector<int> a{0, 2, 1, 1};
     std::sort(a.begin(), a.end());
+    a.resize(std::unique(a.begin(), a.end()) - a.begin());
     for (int x: a) {
         std::cout << x << ", ";
     }
