@@ -44,3 +44,8 @@ TEST(TE, ZeroRank) {
     };
 //    auto T = te::compute({}, fcompute, "test.zero_rank");
 }
+
+TEST(TE, Reduce) {
+    auto m = tir::SizeVar("m");
+
+}
