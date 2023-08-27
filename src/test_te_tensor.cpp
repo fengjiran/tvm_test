@@ -33,5 +33,14 @@ TEST(TE, Tensor) {
 }
 
 TEST(TE, ZeroRank) {
-    //
+    auto m = tir::SizeVar("m");
+    auto A = te::placeholder({m}, DataType::Float(32), "A");
+    auto scale = te::placeholder({}, DataType::Float(32), "s");
+//    auto dom = Range{0, m};
+    auto k = te::reduce_axis(Range(0, m), "k");
+    auto fcompute = [&](const Array<tir::Var>& idx) {
+        ICHECK(idx.size() == 0);
+
+    };
+//    auto T = te::compute({}, fcompute, "test.zero_rank");
 }
