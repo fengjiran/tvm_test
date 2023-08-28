@@ -98,16 +98,18 @@ TEST(TE, conv1d) {
 
 TEST(TE, TensorSlice) {
     auto m = tir::SizeVar("m");
-    auto A = te::compute({m, m}, [&](const Array<tir::Var> &idx) {
+    auto A = te::compute(Array<PrimExpr>{m, m}, [&](const Array<tir::Var> &idx) {
         ICHECK_EQ(idx.size(), 2);
         return FloatImm(DataType::Float(32), 1);
     });
-    auto B = te::compute({m}, [&](const Array<tir::Var> &idx) {
+    auto B = te::compute(Array<PrimExpr>{m}, [&](const Array<tir::Var> &idx) {
         ICHECK_EQ(idx.size(), 1);
         return A(Array<PrimExpr>{0, idx[0]}) + A(Array<PrimExpr>{0, idx[0]});
     });
     ASSERT_EQ(A.ndim(), 2);
     ASSERT_EQ(B.ndim(), 1);
+//    ASSERT_TRUE(A->shape[0] == m);
+//    ASSERT_TRUE(A->shape[1] == m);
 }
 
 TEST(TE, Reduce) {
