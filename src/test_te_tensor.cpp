@@ -86,6 +86,15 @@ TEST(TE, ZeroRank) {
 //              << T << std::endl;
 }
 
+TEST(TE, conv1d) {
+    auto m = tir::SizeVar("m");
+    auto A = te::placeholder({m + 2});
+    auto fcompute = [&](const Array<tir::Var> &idx) {
+        return A[idx[0]] + A[idx[0] + 1] + A[idx[0] + 2];
+    };
+    auto T = te::compute({m}, fcompute, "conv1d");
+}
+
 TEST(TE, Reduce) {
     auto m = tir::SizeVar("m");
 
