@@ -93,6 +93,21 @@ TEST(TE, conv1d) {
         return A[idx[0]] + A[idx[0] + 1] + A[idx[0] + 2];
     };
     auto T = te::compute({m}, fcompute, "conv1d");
+    ASSERT_EQ(T.ndim(), 1);
+}
+
+TEST(TE, TensorSlice) {
+    auto m = tir::SizeVar("m");
+    auto A = te::compute({m, m}, [&](const Array<tir::Var> &idx) {
+        ICHECK_EQ(idx.size(), 2);
+        return FloatImm(DataType::Float(32), 1);
+    });
+    auto B = te::compute({m}, [&](const Array<tir::Var> &idx) {
+        ICHECK_EQ(idx.size(), 1);
+        return A(Array<PrimExpr>{0, idx[0]}) + A(Array<PrimExpr>{0, idx[0]});
+    });
+    ASSERT_EQ(A.ndim(), 2);
+    ASSERT_EQ(B.ndim(), 1);
 }
 
 TEST(TE, Reduce) {
