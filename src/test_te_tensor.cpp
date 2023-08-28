@@ -32,6 +32,7 @@ std::vector<int> GetRealAxis(int ndim, const Array<Integer> &axis) {
     return real_axis;
 }
 
+// like topi::sum
 te::Tensor test_sum(const te::Tensor &data, const Array<Integer> &axis, bool keepdims = false, bool atleast1d = false) {
     auto ndim = data->shape.size();
     ICHECK_NE(ndim, 0) << "Can not reduce a 0 dim Tensor.";
