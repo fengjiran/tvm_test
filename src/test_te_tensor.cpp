@@ -6,6 +6,7 @@
 #include "tvm/te/operation.h"
 #include "tvm/tir/var.h"
 #include "tvm/tir/op.h"
+#include "tvm/topi/reduction.h"
 
 using namespace tvm;
 
@@ -31,10 +32,24 @@ std::vector<int> GetRealAxis(int ndim, const Array<Integer> &axis) {
     return real_axis;
 }
 
+te::Tensor test_sum(const te::Tensor &data, const Array<Integer> &axis, bool keepdims = false, bool atleast1d = false) {
+    auto ndim = data->shape.size();
+    ICHECK_NE(ndim, 0) << "Can not reduce a 0 dim Tensor.";
+    auto real_axis = topi::GetRealAxis(static_cast<int>(ndim), axis);
+    auto target_shape = topi::MakeReduceTargetShape(real_axis, data, keepdims, atleast1d);
+    auto squeeze_axes = keepdims ? std::vector<int>() : real_axis;
+    auto reduce_axes = topi::MakeReduceAxes(real_axis, data);
+    auto fcompute = [&](const Array<tir::Var>& indices) {
+        //
+    };
+
+}
+
 TEST(TE, GetRealAxis) {
     int ndim = 4;
     Array<Integer> reduce_axis{2, 3};
-    auto real_axis = GetRealAxis(ndim, reduce_axis);
+//    auto real_axis = GetRealAxis(ndim, reduce_axis);
+    auto real_axis = topi::GetRealAxis(ndim, reduce_axis);
     std::cout << "\n";
 }
 
@@ -64,14 +79,11 @@ TEST(TE, Tensor) {
 TEST(TE, ZeroRank) {
     auto m = tir::SizeVar("m");
     auto A = te::placeholder({m}, DataType::Float(32), "A");
-    auto scale = te::placeholder({}, DataType::Float(32), "s");
-//    auto dom = Range{0, m};
+    auto scale = te::placeholder({}, DataType::Float(32), "scale");
     auto k = te::reduce_axis(Range(0, m), "k");
-    auto fcompute = [&](const Array<tir::Var> &idx) {
-        ICHECK(idx.size() == 0);
-
-    };
-//    auto T = te::compute({}, fcompute, "test.zero_rank");
+    auto T = topi::sum(A, {0});
+    std::cout << "The compute tensor:\n"
+              << T << std::endl;
 }
 
 TEST(TE, Reduce) {
