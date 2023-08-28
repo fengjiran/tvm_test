@@ -37,12 +37,28 @@ te::Tensor test_sum(const te::Tensor &data, const Array<Integer> &axis, bool kee
     ICHECK_NE(ndim, 0) << "Can not reduce a 0 dim Tensor.";
     auto real_axis = topi::GetRealAxis(static_cast<int>(ndim), axis);
     auto target_shape = topi::MakeReduceTargetShape(real_axis, data, keepdims, atleast1d);
-    auto squeeze_axes = keepdims ? std::vector<int>() : real_axis;
+    auto squeezed_axes = keepdims ? std::vector<int>() : real_axis;
     auto reduce_axes = topi::MakeReduceAxes(real_axis, data);
-    auto fcompute = [&](const Array<tir::Var>& indices) {
-        //
+    auto fcompute = [&](const Array<tir::Var> &indices) {
+        if (keepdims) {
+            ICHECK_EQ(indices.size(), ndim);
+        }
+        Array<PrimExpr> eval_range;
+        int arg_counter = 0;
+        int reduce_counter = 0;
+        for (int i = 0; i < ndim; i++) {
+            if (std::find(real_axis.begin(), real_axis.end(), i) != real_axis.end()) {
+                eval_range.push_back(reduce_axes[reduce_counter++]);
+                if (keepdims) {
+                    arg_counter++;
+                }
+                continue;
+            }
+            eval_range.push_back(indices[arg_counter++]);
+        }
+        return tvm::sum(data(eval_range), reduce_axes, {}, Span());
     };
-
+    return te::compute(target_shape, fcompute, data->op->name + "_reduce", topi::kCommReduce);
 }
 
 TEST(TE, GetRealAxis) {
