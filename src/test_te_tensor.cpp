@@ -33,9 +33,11 @@ std::vector<int> GetRealAxis(int ndim, const Array<Integer> &axis) {
 }
 
 // like topi::sum
-te::Tensor test_sum(const te::Tensor &data, const Array<Integer> &axis, bool keepdims = false, bool atleast1d = false) {
-    auto ndim = data->shape.size();
+te::Tensor test_sum(const te::Tensor &data, const te::Tensor &scale, const Array<Integer> &axis, bool keepdims = false,
+                    bool atleast1d = false) {
+    auto ndim = data.ndim();
     ICHECK_NE(ndim, 0) << "Can not reduce a 0 dim Tensor.";
+    ICHECK_EQ(scale.ndim(), 0) << "The dim of scale must be 0.";
     auto real_axis = topi::GetRealAxis(static_cast<int>(ndim), axis);
     auto target_shape = topi::MakeReduceTargetShape(real_axis, data, keepdims, atleast1d);
     auto squeezed_axes = keepdims ? std::vector<int>() : real_axis;
@@ -57,7 +59,7 @@ te::Tensor test_sum(const te::Tensor &data, const Array<Integer> &axis, bool kee
             }
             eval_range.push_back(indices[arg_counter++]);
         }
-        return tvm::sum(data(eval_range), reduce_axes, {}, Span());
+        return tvm::sum(data(eval_range) * scale(), reduce_axes, {}, Span());
     };
     return te::compute(target_shape, fcompute, data->op->name + "_reduce", topi::kCommReduce);
 }
