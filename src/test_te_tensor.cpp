@@ -10,28 +10,6 @@
 
 using namespace tvm;
 
-std::vector<int> GetRealAxis(int ndim, const Array<Integer> &axis) {
-    std::vector<int> real_axis;
-    if (!axis.defined()) {
-        for (int i = 0; i < ndim; i++) {
-            real_axis.push_back(i);
-        }
-    } else {
-        for (auto elem: axis) {
-            auto val = elem->value;
-            if (val < 0) {
-                val += ndim;
-            }
-            ICHECK_LT(val, ndim);
-            ICHECK_GE(val, 0);
-            real_axis.push_back(static_cast<int>(val));
-        }
-        std::sort(real_axis.begin(), real_axis.end());
-        real_axis.resize(std::unique(real_axis.begin(), real_axis.end()) - real_axis.begin());
-    }
-    return real_axis;
-}
-
 // like topi::sum
 te::Tensor test_sum(const te::Tensor &data, const te::Tensor &scale, const Array<Integer> &axis, bool keepdims = false,
                     bool atleast1d = false) {
@@ -67,7 +45,6 @@ te::Tensor test_sum(const te::Tensor &data, const te::Tensor &scale, const Array
 TEST(TE, GetRealAxis) {
     int ndim = 4;
     Array<Integer> reduce_axis{2, 3};
-//    auto real_axis = GetRealAxis(ndim, reduce_axis);
     auto real_axis = topi::GetRealAxis(ndim, reduce_axis);
     std::cout << "\n";
 }
@@ -99,7 +76,10 @@ TEST(TE, ZeroRank) {
     auto m = tir::SizeVar("m");
     auto A = te::placeholder({m}, DataType::Float(32), "A");
     auto scale = te::placeholder({}, DataType::Float(32), "scale");
-    auto k = te::reduce_axis(Range(0, m), "k");
+    auto res = test_sum(A, scale, {0});
+    std::cout << "The compute tensor:\n"
+              << res << std::endl;
+
     auto T = topi::sum(A, {0});
     std::cout << "The compute tensor:\n"
               << T << std::endl;
