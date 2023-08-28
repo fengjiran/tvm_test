@@ -79,10 +79,11 @@ TEST(TE, ZeroRank) {
     auto res = test_sum(A, scale, {0});
     std::cout << "The compute tensor:\n"
               << res << std::endl;
+    ASSERT_EQ(res.ndim(), 0);
 
-    auto T = topi::sum(A, {0});
-    std::cout << "The compute tensor:\n"
-              << T << std::endl;
+//    auto T = topi::sum(A, {0});
+//    std::cout << "The compute tensor:\n"
+//              << T << std::endl;
 }
 
 TEST(TE, Reduce) {
