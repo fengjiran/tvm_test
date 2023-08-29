@@ -113,6 +113,13 @@ TEST(TE, TensorSlice) {
     ASSERT_TRUE(x == y);
 }
 
+TEST(TE, ReduceMultiAxis) {
+    auto m = tir::SizeVar("m");
+    auto n = tir::SizeVar("n");
+    auto A = te::placeholder(Array<PrimExpr>{m, n}, DataType::Float(32), "A");
+
+}
+
 TEST(TE, Reduce) {
     auto m = tir::SizeVar("m");
 
