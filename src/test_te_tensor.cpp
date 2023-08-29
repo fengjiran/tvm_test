@@ -117,7 +117,8 @@ TEST(TE, ReduceMultiAxis) {
     auto m = tir::SizeVar("m");
     auto n = tir::SizeVar("n");
     auto A = te::placeholder(Array<PrimExpr>{m, n}, DataType::Float(32), "A");
-
+    auto res = topi::sum(A, Array<Integer>{0, 1});
+    ASSERT_EQ(res.ndim(), 0);
 }
 
 TEST(TE, Reduce) {
