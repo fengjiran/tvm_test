@@ -108,8 +108,9 @@ TEST(TE, TensorSlice) {
     });
     ASSERT_EQ(A.ndim(), 2);
     ASSERT_EQ(B.ndim(), 1);
-//    ASSERT_TRUE(A->shape[0] == m);
-//    ASSERT_TRUE(A->shape[1] == m);
+    auto x = static_cast<ObjectRef>(m);
+    auto y = static_cast<ObjectRef>(A->shape[0]);
+    ASSERT_TRUE(x == y);
 }
 
 TEST(TE, Reduce) {
