@@ -20,3 +20,18 @@ TEST(Sort, SortCmpFunc) {
         std::cout << x << ", ";
     }
 }
+
+TEST(Sort, SortArray) {
+    std::vector<std::vector<int>> envelops = {{5, 4},
+                                              {6, 4},
+                                              {6, 7},
+                                              {2, 3}};
+    auto cmp = [](std::vector<int> &a, std::vector<int> &b) {
+        return a[0] == b[0] ? b[1] < a[1] : a[0] < b[0];
+    };
+
+    std::sort(envelops.begin(), envelops.end(), cmp);
+    for (auto &edge: envelops) {
+        std::cout << edge[0] << ' ' << edge[1] << std::endl;
+    }
+}
