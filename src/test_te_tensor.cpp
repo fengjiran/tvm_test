@@ -4,6 +4,7 @@
 #include "gtest/gtest.h"
 #include "tvm/te/tensor.h"
 #include "tvm/te/operation.h"
+#include "tvm/te/schedule.h"
 #include "tvm/tir/var.h"
 #include "tvm/tir/op.h"
 #include "tvm/topi/reduction.h"
@@ -126,7 +127,7 @@ TEST(TE, InputTensor) {
     auto m = tir::SizeVar("m");
     auto A = te::placeholder(Array<PrimExpr>{m}, DataType::Float(32), "A");
     auto B = te::placeholder(Array<PrimExpr>{m}, DataType::Float(32), "A");
-    auto fcompute = [&](const Array<tir::Var>& indices) {
+    auto fcompute = [&](const Array<tir::Var> &indices) {
         ICHECK_EQ(indices.size(), 1);
         return A(indices) + B(indices);
     };
@@ -138,6 +139,9 @@ TEST(TE, InputTensor) {
     ASSERT_EQ(inputs.size(), 2);
     ASSERT_TRUE(static_cast<ObjectRef>(inputs[0]) == static_cast<ObjectRef>(A));
     ASSERT_TRUE(static_cast<ObjectRef>(inputs[1]) == static_cast<ObjectRef>(B));
+
+    te::Schedule s = te::create_schedule({T->op});
+    std::cout << s->stages.size() << std::endl;
 }
 
 TEST(TE, Reduce) {
