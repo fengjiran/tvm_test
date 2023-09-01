@@ -131,6 +131,8 @@ TEST(TE, InputTensor) {
         return A(indices) + B(indices);
     };
     auto T = te::compute(A->shape, fcompute);
+    Array<te::Tensor> inputs = Downcast<te::ComputeOp>(T->op)->InputTensors();
+    ASSERT_TRUE(T->op->IsInstance<te::ComputeOpNode>());
     ASSERT_EQ(T.ndim(), 1);
 }
 
