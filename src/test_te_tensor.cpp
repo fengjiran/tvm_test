@@ -140,7 +140,7 @@ TEST(TE, InputTensor) {
     ASSERT_TRUE(static_cast<ObjectRef>(inputs[0]) == static_cast<ObjectRef>(A));
     ASSERT_TRUE(static_cast<ObjectRef>(inputs[1]) == static_cast<ObjectRef>(B));
 
-    te::Schedule s = te::create_schedule({T->op});
+    te::Schedule s = te::create_schedule(Array<te::Operation>{T->op});
     std::cout << s->stages.size() << std::endl;
 }
 
