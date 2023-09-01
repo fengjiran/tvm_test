@@ -118,7 +118,20 @@ TEST(TE, ReduceMultiAxis) {
     auto n = tir::SizeVar("n");
     auto A = te::placeholder(Array<PrimExpr>{m, n}, DataType::Float(32), "A");
     auto res = topi::sum(A, Array<Integer>{0, 1});
+    auto a = Downcast<te::ComputeOp>(res->op)->InputTensors();
     ASSERT_EQ(res.ndim(), 0);
+}
+
+TEST(TE, InputTensor) {
+    auto m = tir::SizeVar("m");
+    auto A = te::placeholder(Array<PrimExpr>{m}, DataType::Float(32), "A");
+    auto B = te::placeholder(Array<PrimExpr>{m}, DataType::Float(32), "A");
+    auto fcompute = [&](const Array<tir::Var>& indices) {
+        ICHECK_EQ(indices.size(), 1);
+        return A(indices) + B(indices);
+    };
+    auto T = te::compute(A->shape, fcompute);
+    ASSERT_EQ(T.ndim(), 1);
 }
 
 TEST(TE, Reduce) {
