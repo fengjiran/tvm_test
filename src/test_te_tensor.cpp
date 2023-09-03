@@ -144,6 +144,21 @@ TEST(TE, InputTensor) {
     std::cout << s->stages.size() << std::endl;
 }
 
+TEST(TE, ScanOp) {
+    auto m = tir::SizeVar("m");
+    auto n = tir::SizeVar("n");
+    auto x = te::placeholder(Array<PrimExpr>{m, n});
+    auto state = te::placeholder(Array<PrimExpr>{m, n});
+    auto init = te::compute(Array<PrimExpr>{1, n}, [&](const tir::Var &_, const tir::Var &i) {
+        return x({0, i});
+    }, "init");
+    auto update = te::compute(Array<PrimExpr>{m, n}, [&](const tir::Var &t, const tir::Var &i) {
+        return state(t - 1, i) + x(t, i);
+    }, "update");
+
+    auto scan = te::scan({init}, {update}, {state});
+}
+
 TEST(TE, Reduce) {
     auto m = tir::SizeVar("m");
 
