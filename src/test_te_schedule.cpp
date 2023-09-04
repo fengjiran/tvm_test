@@ -7,3 +7,9 @@
 #include "tvm/te/schedule.h"
 #include "tvm/tir/var.h"
 #include "tvm/tir/op.h"
+
+using namespace tvm;
+
+TEST(TESchedule, split) {
+    //
+}
