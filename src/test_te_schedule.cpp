@@ -16,8 +16,8 @@ TEST(TESchedule, split) {
     int m = 1024;
     int n = 1024;
     int c = 10;
-    auto A = te::placeholder(Array<PrimExpr>{m, n, c}, DataType::Float(32), "A");
-    auto T = topi::sum(A, {0, 1});
+    auto A = te::placeholder(Array<PrimExpr>{c, m, n}, DataType::Float(32), "A");
+    auto T = topi::sum(A, {1, 2});
     auto s = te::create_schedule(Array<te::Operation>{T->op});
     std::cout << "stage num: " << s->stages.size() << std::endl;
     auto reduce_axes = Downcast<te::ComputeOp>(T->op)->reduce_axis;
