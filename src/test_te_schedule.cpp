@@ -25,3 +25,7 @@ TEST(TESchedule, split) {
     auto mod = LowerSchedule(s, Array<te::Tensor>{A, T}, "main", {}, GlobalVarSupply(NameSupply("")), true);
     std::cout << mod << std::endl;
 }
+
+TEST(TESchedule, fuse) {
+    //
+}
