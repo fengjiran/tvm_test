@@ -16,5 +16,8 @@ TEST(TESchedule, split) {
     auto A = te::placeholder(Array<PrimExpr>{n}, DataType::Float(32), "A");
     auto T = topi::sum(A, {0});
     auto s = te::create_schedule(Array<te::Operation>{T->op});
-//    auto x = s[T].split()
+    tir::IterVar outer;
+    tir::IterVar inner;
+    auto reduce_axis = Downcast<te::ComputeOp>(T->op)->reduce_axis[0];
+    auto x = s[T].split(reduce_axis, 16, &outer, &inner);
 }

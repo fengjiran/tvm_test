@@ -150,7 +150,7 @@ TEST(TE, ScanOp) {
     auto x = te::placeholder(Array<PrimExpr>{m, n});
     auto state = te::placeholder(Array<PrimExpr>{m, n});
     auto init = te::compute(Array<PrimExpr>{1, n}, [&](const tir::Var &_, const tir::Var &i) {
-        return x({0, i});
+        return x(Array<PrimExpr>{0, i});
     }, "init");
     auto update = te::compute(Array<PrimExpr>{m, n}, [&](const tir::Var &t, const tir::Var &i) {
         return state(t - 1, i) + x(t, i);
