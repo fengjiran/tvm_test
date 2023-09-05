@@ -8,6 +8,7 @@
 #include "tvm/tir/var.h"
 #include "tvm/tir/op.h"
 #include "tvm/topi/reduction.h"
+#include "tvm/driver/driver_api.h"
 
 using namespace tvm;
 
@@ -20,5 +21,7 @@ TEST(TESchedule, split) {
     tir::IterVar outer;
     tir::IterVar inner;
     auto reduce_axis = Downcast<te::ComputeOp>(T->op)->reduce_axis[0];
-    auto x = s[T].split(reduce_axis, 16, &outer, &inner);
+    auto stage = s[T].split(reduce_axis, 16, &outer, &inner);
+    auto mod = LowerSchedule(s, Array<te::Tensor>{A, T}, "main", {}, GlobalVarSupply(NameSupply("")), true);
+    std::cout << mod << std::endl;
 }
