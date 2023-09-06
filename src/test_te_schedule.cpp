@@ -46,7 +46,8 @@ TEST(TESchedule, reorder) {
     auto sch1 = te::create_schedule(Array<te::Operation>{T->op});
     ASSERT_EQ(sch1->stages.size(), 3);
     auto stage = sch1[T];
-    std::cout << "All iter var num before reorder: " << stage->all_iter_vars.size() << std::endl;
+    LOG_INFO << "Print schedule before reorder:";
+    LOG_INFO << "All iter var num before reorder: " << stage->all_iter_vars.size();
     std::cout << "Leaf iter var num before reorder: " << stage->leaf_iter_vars.size() << std::endl;
     auto mod1 = LowerSchedule(sch1, Array<te::Tensor>{A, B, T}, "main", {}, GlobalVarSupply(NameSupply("")), true);
     std::cout << mod1 << std::endl;
