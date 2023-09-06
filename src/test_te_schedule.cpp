@@ -29,6 +29,8 @@ TEST(TESchedule, split) {
     tir::IterVar inner1;
     auto stage = s[T].split(reduce_axes[0], 16, &outer0, &inner0)
             .split(reduce_axes[1], 16, &outer1, &inner1);
+    std::cout << "All iter var num: " << stage->all_iter_vars.size() << std::endl;
+    std::cout << "Leaf iter var num: " << stage->leaf_iter_vars.size() << std::endl;
     auto mod = LowerSchedule(s, Array<te::Tensor>{A, T}, "main", {}, GlobalVarSupply(NameSupply("")), true);
     std::cout << mod << std::endl;
 }
