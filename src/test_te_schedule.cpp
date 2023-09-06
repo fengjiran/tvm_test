@@ -80,5 +80,8 @@ TEST(TESchedule, tile) {
     });
 
     auto sch = te::create_schedule(Array<te::Operation>{T->op});
+    LOG_INFO << "Print schedule before tile:";
     ASSERT_EQ(sch->stages.size(), 3);
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, T}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
 }
