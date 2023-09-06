@@ -35,6 +35,20 @@ TEST(TESchedule, split) {
     std::cout << mod << std::endl;
 }
 
-TEST(TESchedule, fuse) {
-    //
+TEST(TESchedule, reorder) {
+    auto m = tir::SizeVar("m");
+    auto n = tir::SizeVar("n");
+    auto A = te::placeholder(Array<PrimExpr>{m, n}, DataType::Float(32), "A");
+    auto B = te::placeholder(Array<PrimExpr>{m, n}, DataType::Float(32), "B");
+    auto T = te::compute({m, n}, [&](const tir::Var &i, const tir::Var &j) {
+        return A(i, j) + B(i, j);
+    });
+    auto sch1 = te::create_schedule(Array<te::Operation>{T->op});
+    ASSERT_EQ(sch1->stages.size(), 3);
+    auto stage = sch1[T];
+    std::cout << "All iter var num before reorder: " << stage->all_iter_vars.size() << std::endl;
+    std::cout << "Leaf iter var num before reorder: " << stage->leaf_iter_vars.size() << std::endl;
+    auto mod1 = LowerSchedule(sch1, Array<te::Tensor>{A, B, T}, "main", {}, GlobalVarSupply(NameSupply("")), true);
+    std::cout << mod1 << std::endl;
+
 }
