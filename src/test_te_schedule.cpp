@@ -67,3 +67,18 @@ TEST(TESchedule, reorder) {
     std::cout << LowerSchedule(sch1, Array<te::Tensor>{A, B, T}, "main", {}, GlobalVarSupply(NameSupply("")), true)
               << std::endl;
 }
+
+TEST(TESchedule, tile) {
+    auto m = tir::SizeVar("m");
+    auto n = tir::SizeVar("n");
+    auto k = tir::SizeVar("k");
+    auto A = te::placeholder(Array<PrimExpr>{m, k}, DataType::Float(32), "A");
+    auto B = te::placeholder(Array<PrimExpr>{k, n}, DataType::Float(32), "B");
+    auto red_k = te::reduce_axis(Range(0, k), "red_k");
+    auto T = te::compute(Array<PrimExpr>{m, n}, [&](const tir::Var &i, const tir::Var &j) {
+        return A(i, red_k) * B(red_k, j);
+    });
+
+    auto sch = te::create_schedule(Array<te::Operation>{T->op});
+    ASSERT_EQ(sch->stages.size(), 3);
+}
