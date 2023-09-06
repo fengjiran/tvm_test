@@ -48,8 +48,22 @@ TEST(TESchedule, reorder) {
     auto stage = sch1[T];
     LOG_INFO << "Print schedule before reorder:";
     LOG_INFO << "All iter var num before reorder: " << stage->all_iter_vars.size();
-    std::cout << "Leaf iter var num before reorder: " << stage->leaf_iter_vars.size() << std::endl;
+    LOG_INFO << "Leaf iter var num before reorder: " << stage->leaf_iter_vars.size();
     auto mod1 = LowerSchedule(sch1, Array<te::Tensor>{A, B, T}, "main", {}, GlobalVarSupply(NameSupply("")), true);
     std::cout << mod1 << std::endl;
 
+    tir::IterVar k0_outer;
+    tir::IterVar k0_inner;
+    tir::IterVar k1_outer;
+    tir::IterVar k1_inner;
+    auto axes = Downcast<te::ComputeOp>(T->op)->axis;
+    ASSERT_EQ(axes.size(), 2);
+    stage.split(axes[0], 32, &k0_outer, &k0_inner)
+            .split(axes[1], 32, &k1_outer, &k1_inner)
+            .reorder({k0_outer, k1_outer, k1_inner, k0_inner});
+    LOG_INFO << "Print schedule after reorder:";
+    LOG_INFO << "All iter var num after reorder: " << stage->all_iter_vars.size();
+    LOG_INFO << "Leaf iter var num after reorder: " << stage->leaf_iter_vars.size();
+    std::cout << LowerSchedule(sch1, Array<te::Tensor>{A, B, T}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
 }
