@@ -84,4 +84,16 @@ TEST(TESchedule, tile) {
     ASSERT_EQ(sch->stages.size(), 3);
     std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, T}, "main", {}, GlobalVarSupply(NameSupply("")), true)
               << std::endl;
+    auto stage = sch[T];
+    auto axes = Downcast<te::ComputeOp>(T->op)->axis;
+    ASSERT_EQ(axes.size(), 2);
+
+    tir::IterVar k0_outer;
+    tir::IterVar k0_inner;
+    tir::IterVar k1_outer;
+    tir::IterVar k1_inner;
+    stage.tile(axes[0], axes[1], 10, 5, &k0_outer, &k1_outer, &k0_inner, &k1_inner);
+    LOG_INFO << "Print schedule after tile:";
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, T}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
 }
