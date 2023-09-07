@@ -97,3 +97,24 @@ TEST(TESchedule, tile) {
     std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, T}, "main", {}, GlobalVarSupply(NameSupply("")), true)
               << std::endl;
 }
+
+TEST(TESchedule, fuse) {
+    auto m = tir::SizeVar("m");
+    auto n = tir::SizeVar("n");
+    auto A = te::placeholder(Array<PrimExpr>{m, n}, DataType::Float(32), "A");
+    auto T = te::compute(Array<PrimExpr>{m, n}, [&](const tir::Var &i, const tir::Var &j) {
+        return A(i, j);
+    });
+
+    auto sch = te::create_schedule(Array<te::Operation>{T->op});
+    auto axes = Downcast<te::ComputeOp>(T->op)->axis;
+    ASSERT_EQ(axes.size(), 2);
+
+    tir::IterVar k0_outer;
+    tir::IterVar k0_inner;
+    tir::IterVar k1_outer;
+    tir::IterVar k1_inner;
+    sch[T].tile(axes[0], axes[1], 10, 5, &k0_outer, &k1_outer, &k0_inner, &k1_inner);
+    tir::IterVar fused;
+    sch[T].fuse(k0_outer, k1_outer, &fused);
+}
