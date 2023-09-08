@@ -118,3 +118,17 @@ TEST(TESchedule, fuse) {
     tir::IterVar fused;
     sch[T].fuse(k0_outer, k1_outer, &fused);
 }
+
+TEST(TESchedule, CacheRead) {
+    auto m = tir::SizeVar("m");
+    auto A = te::placeholder(Array<PrimExpr>{m, m}, DataType::Float(32), "A");
+    auto T = topi::sum(A, {0});
+    auto sch = te::create_schedule(Array<te::Operation>{T->op});
+    LOG_INFO << "Print schedule before cache read:";
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, T}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
+    sch.cache_read(A, "shared", {T->op});
+    LOG_INFO << "Print schedule after cache read:";
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, T}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
+}
