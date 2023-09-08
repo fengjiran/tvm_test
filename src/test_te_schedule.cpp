@@ -132,3 +132,16 @@ TEST(TESchedule, CacheRead) {
     std::cout << LowerSchedule(sch, Array<te::Tensor>{A, T}, "main", {}, GlobalVarSupply(NameSupply("")), true)
               << std::endl;
 }
+
+TEST(TESchedule, CacheWrite) {
+    auto m = tir::SizeVar("m");
+    auto A = te::placeholder(Array<PrimExpr>{m, m}, DataType::Float(32), "A");
+    auto T = topi::sum(A, {0});
+    auto sch = te::create_schedule(Array<te::Operation>{T->op});
+    LOG_INFO << "Print schedule before cache write:";
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, T}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
+    sch.cache_write(T, "local");
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, T}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
+}
