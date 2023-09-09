@@ -142,6 +142,12 @@ TEST(TESchedule, CacheWrite) {
     std::cout << LowerSchedule(sch, Array<te::Tensor>{A, T}, "main", {}, GlobalVarSupply(NameSupply("")), true)
               << std::endl;
     sch.cache_write(T, "local");
+    std::cout << "----------------------------cut line-------------------------------\n";
+    LOG_INFO << "Print schedule after cache write:";
     std::cout << LowerSchedule(sch, Array<te::Tensor>{A, T}, "main", {}, GlobalVarSupply(NameSupply("")), true)
               << std::endl;
+}
+
+TEST(TESchedule, ReplaceInputs) {
+    //
 }
