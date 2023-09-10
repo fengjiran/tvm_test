@@ -27,7 +27,7 @@ TEST(Sort, SortArray) {
                                               {6, 7},
                                               {2, 3}};
     auto cmp = [](std::vector<int> &a, std::vector<int> &b) {
-        return a[0] == b[0] ? b[1] < a[1] : a[0] < b[0];
+        return a[0] == b[0] ? a[1] > b[1] : a[0] < b[0];
     };
 
     std::sort(envelops.begin(), envelops.end(), cmp);
