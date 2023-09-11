@@ -37,5 +37,21 @@ TEST(Sort, SortArray) {
 }
 
 TEST(DP, CoinChange) {
-    //
+    auto coin_change = [](const std::vector<int> &coins, int amount) {
+        std::vector<int> dp(amount + 1, amount + 1);
+        dp[0] = 0;
+        for (int i = 1; i < amount + 1; i++) {
+            for (int coin: coins) {
+                if (i - coin < 0) {
+                    continue;
+                }
+                dp[i] = std::min(dp[i], dp[i - coin] + 1);
+            }
+        }
+        return dp[amount] == amount + 1 ? -1 : dp[amount];
+    };
+
+    ASSERT_EQ(coin_change({1, 2, 5}, 11), 3);
+    ASSERT_EQ(coin_change({2}, 3), -1);
+    ASSERT_EQ(coin_change({1}, 0), 0);
 }
