@@ -36,7 +36,7 @@ TEST(Sort, SortArray) {
     }
 }
 
-TEST(DP, CoinChange) {
+TEST(DP, CoinChange1) {
     auto coin_change = [](const std::vector<int> &coins, int amount) {
         std::vector<int> dp(amount + 1, amount + 1);
         dp[0] = 0;
@@ -49,6 +49,42 @@ TEST(DP, CoinChange) {
             }
         }
         return dp[amount] == amount + 1 ? -1 : dp[amount];
+    };
+
+    ASSERT_EQ(coin_change({1, 2, 5}, 11), 3);
+    ASSERT_EQ(coin_change({2}, 3), -1);
+    ASSERT_EQ(coin_change({1}, 0), 0);
+}
+
+int coin_change_dp(const std::vector<int> &coins, std::vector<int> &memo, int amount) {
+    if (amount == 0) {
+        return 0;
+    }
+
+    if (amount < 0) {
+        return -1;
+    }
+
+    if (memo[amount] != -999) {
+        return memo[amount];
+    }
+
+    int res = std::numeric_limits<int>::max();
+    for (int coin: coins) {
+        int subp = coin_change_dp(coins, memo, amount - coin);
+        if (subp == -1) {
+            continue;
+        }
+        res = std::min(res, subp + 1);
+    }
+    memo[amount] = res == std::numeric_limits<int>::max() ? -1 : res;
+    return memo[amount];
+}
+
+TEST(DP, CoinChange2) {
+    auto coin_change = [](const std::vector<int> &coins, int amount) {
+        std::vector<int> memo(amount + 1, -999);
+        return coin_change_dp(coins, memo, amount);
     };
 
     ASSERT_EQ(coin_change({1, 2, 5}, 11), 3);
