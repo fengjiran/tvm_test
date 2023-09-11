@@ -35,3 +35,7 @@ TEST(Sort, SortArray) {
         std::cout << edge[0] << ' ' << edge[1] << std::endl;
     }
 }
+
+TEST(DP, CoinChange) {
+    //
+}
