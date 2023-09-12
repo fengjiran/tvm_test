@@ -154,11 +154,11 @@ TEST(TESchedule, StorageAlign) {
     auto A = te::placeholder(Array<PrimExpr>{m, n}, DataType::Float(32), "A");
     auto T = topi::sum(A, {1});
     auto sch = te::create_schedule(Array<te::Operation>{T->op});
-    sch.cache_read(A, "shared", {T->op});
+    auto AA = sch.cache_read(A, "shared", {T->op});
     LOG_INFO << "Print schedule before storage align:";
     std::cout << LowerSchedule(sch, Array<te::Tensor>{A, T}, "main", {}, GlobalVarSupply(NameSupply("")), true)
               << std::endl;
-    auto axes = Downcast<te::ComputeOp>(T->op)->axis;
+    auto axes = Downcast<te::ComputeOp>(AA->op)->axis;
     sch[T].storage_align(axes[0], 100, 8);
     std::cout << "----------------------------cut line-------------------------------\n";
     LOG_INFO << "Print schedule after storage align:";
