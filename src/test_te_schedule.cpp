@@ -226,3 +226,26 @@ TEST(TESchedule, Vectorize) {
     std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, C}, "main", {}, GlobalVarSupply(NameSupply("")), true)
               << std::endl;
 }
+
+TEST(TESchedule, Unroll) {
+    int m = 1024;
+    auto A = te::placeholder(Array<PrimExpr>{m, m}, DataType::Float(32), "A");
+    auto B = te::placeholder(Array<PrimExpr>{m, m}, DataType::Float(32), "B");
+    auto C = te::compute(Array<PrimExpr>{m, m}, [&](const tir::Var &i, const tir::Var &j) {
+        return A(i, j) + B(i, j);
+    });
+    te::Schedule sch = te::create_schedule(Array<te::Operation>{C->op});
+    auto axes = Downcast<te::ComputeOp>(C->op)->axis;
+    ASSERT_EQ(axes.size(), 2);
+
+    tir::IterVar k0_outer;
+    tir::IterVar k0_inner;
+    sch[C].split(axes[0], 4, &k0_outer, &k0_inner);
+    LOG_INFO << "Print schedule before unroll:";
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, C}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
+    sch[C].unroll(k0_inner);
+    LOG_INFO << "Print schedule after unroll:";
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, C}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
+}
