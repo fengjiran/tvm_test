@@ -184,3 +184,19 @@ TEST(TESchedule, ComputeAt) {
     std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, C}, "main", {}, GlobalVarSupply(NameSupply("")), true)
               << std::endl;
 }
+
+TEST(TESchedule, ComputeInline) {
+    auto m = tir::SizeVar("m");
+    auto A = te::placeholder(Array<PrimExpr>{m}, DataType::Float(32), "A");
+    auto B = te::compute(Array<PrimExpr>{m}, [&](const tir::Var &i) {
+        return A(i) + 1;
+    });
+    auto C = te::compute(Array<PrimExpr>{m}, [&](const tir::Var &i) {
+        return B(i) * 2;
+    });
+    auto sch = te::create_schedule(Array<te::Operation>{C->op});
+    sch[B].compute_inline();
+    LOG_INFO << "Print schedule after compute inline:";
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, C}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
+}
