@@ -200,3 +200,29 @@ TEST(TESchedule, ComputeInline) {
     std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, C}, "main", {}, GlobalVarSupply(NameSupply("")), true)
               << std::endl;
 }
+
+TEST(TESchedule, Vectorize) {
+    auto m = tir::SizeVar("m");
+    auto n = tir::SizeVar("n");
+    auto A = te::placeholder(Array<PrimExpr>{m, n}, DataType::Float(32), "A");
+    auto B = te::placeholder(Array<PrimExpr>{m, n}, DataType::Float(32), "B");
+    auto C = te::compute(Array<PrimExpr>{m, n}, [&](const tir::Var &i, const tir::Var &j) {
+        return A(i, j) + B(i, j);
+    });
+    te::Schedule sch = te::create_schedule(Array<te::Operation>{C->op});
+    auto axes = Downcast<te::ComputeOp>(C->op)->axis;
+    ASSERT_EQ(axes.size(), 2);
+
+    tir::IterVar k0_outer;
+    tir::IterVar k0_inner;
+    tir::IterVar k1_outer;
+    tir::IterVar k1_inner;
+    sch[C].tile(axes[0], axes[1], 32, 32, &k0_outer, &k1_outer, &k0_inner, &k1_inner);
+    LOG_INFO << "Print schedule before vectorize:";
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, C}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
+    sch[C].vectorize(k1_inner);
+    LOG_INFO << "Print schedule after vectorize:";
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, C}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
+}
