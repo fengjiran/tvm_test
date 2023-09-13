@@ -179,4 +179,8 @@ TEST(TESchedule, ComputeAt) {
     LOG_INFO << "Print schedule before compute at:";
     std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, C}, "main", {}, GlobalVarSupply(NameSupply("")), true)
               << std::endl;
+    sch[B].compute_at(sch[C], Downcast<te::ComputeOp>(C->op)->axis[0]);
+    LOG_INFO << "Print schedule after compute at:";
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, C}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
 }
