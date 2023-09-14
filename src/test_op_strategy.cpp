@@ -114,8 +114,6 @@ TVM_REGISTER_GLOBAL("test.concatenate_strategy")
     auto strategy = relay::OpStrategy(std::move(n));
     strategy.AddImplementation(fcompute, fschedule, "test.concatenate_strategy", 10);
     return strategy;
-
-
 });
 
 void ResetOpStrategy(const std::string &op_name) {
