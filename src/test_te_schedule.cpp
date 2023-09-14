@@ -272,3 +272,19 @@ TEST(TESchedule, Bind) {
     std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B}, "main", {}, GlobalVarSupply(NameSupply("")), true)
               << std::endl;
 }
+
+TEST(TESchedule, Parallel) {
+    int m = 1024;
+    int n = 1024;
+    auto A = te::placeholder(Array<PrimExpr>{m, n}, DataType::Float(32), "A");
+    auto B = topi::sum(A, {1});
+    auto sch = te::create_schedule(Array<te::Operation>{B->op});
+    LOG_INFO << "Print schedule before parallel:";
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
+    std::cout << "----------------------------cut line-------------------------------\n";
+    sch[B].parallel(Downcast<te::ComputeOp>(B->op)->reduce_axis[0]);
+    LOG_INFO << "Print schedule after parallel:";
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
+}
