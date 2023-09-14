@@ -249,3 +249,26 @@ TEST(TESchedule, Unroll) {
     std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, C}, "main", {}, GlobalVarSupply(NameSupply("")), true)
               << std::endl;
 }
+
+TEST(TESchedule, Bind) {
+    int m = 1024;
+    auto A = te::placeholder(Array<PrimExpr>{m}, DataType::Float(32), "A");
+    auto B = topi::sum(A, {0});
+    te::Schedule sch = te::create_schedule(Array<te::Operation>{B->op});
+    auto reduce_axes = Downcast<te::ComputeOp>(B->op)->reduce_axis;
+    ASSERT_EQ(reduce_axes.size(), 1);
+
+    tir::IterVar k0_outer;
+    tir::IterVar k0_inner;
+    sch[B].split(reduce_axes[0], 32, &k0_outer, &k0_inner);
+    LOG_INFO << "Print schedule before bind:";
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
+    tir::IterVar block_iter_var(Range(), tir::Var(), tir::kThreadIndex, "blockIdx.x");
+    tir::IterVar thread_iter_var(Range(), tir::Var(), tir::kThreadIndex, "threadIdx.x");
+    sch[B].bind(k0_outer, block_iter_var);
+    sch[B].bind(k0_inner, thread_iter_var);
+    LOG_INFO << "Print schedule after bind:";
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
+}
