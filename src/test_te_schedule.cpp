@@ -290,5 +290,19 @@ TEST(TESchedule, Parallel) {
 }
 
 TEST(TESchedule, NaiveConv) {
-    //
+    auto n = tir::SizeVar("n");
+    int w = 3;
+    auto input = te::placeholder(Array<PrimExpr>{n, n}, DataType::Float(32), "input");
+    auto filter = te::placeholder(Array<PrimExpr>{w, w}, DataType::Float(32), "filter");
+    auto ki = te::reduce_axis(Range(0, w), "ki");
+    auto kj = te::reduce_axis(Range(0, w), "kj");
+    auto output = te::compute(Array<PrimExpr>{n - w + 1, n - w + 1}, [&](const tir::Var &i, const tir::Var &j) {
+        return tvm::sum(input(i + ki, j + kj) * filter(ki, kj), {ki, kj});
+    });
+    auto sch = te::create_schedule(Array<te::Operation>{output->op});
+    LOG_INFO << "Print naive conv:";
+    std::cout
+            << LowerSchedule(sch, Array<te::Tensor>{input, filter, output}, "main", {}, GlobalVarSupply(NameSupply("")),
+                             true)
+            << std::endl;
 }
