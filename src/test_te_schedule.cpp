@@ -288,3 +288,7 @@ TEST(TESchedule, Parallel) {
     std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B}, "main", {}, GlobalVarSupply(NameSupply("")), true)
               << std::endl;
 }
+
+TEST(TESchedule, NaiveConv) {
+    //
+}
