@@ -158,8 +158,3 @@ TEST(TE, ScanOp) {
 
     auto scan = te::scan({init}, {update}, {state});
 }
-
-TEST(TE, Reduce) {
-    auto m = tir::SizeVar("m");
-
-}
