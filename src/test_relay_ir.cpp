@@ -11,6 +11,7 @@
 #include "tvm/runtime/device_api.h"
 #include "tvm/runtime/registry.h"
 #include "tvm/node/serialization.h"
+#include "tvm/tir/function.h"
 
 using namespace tvm;
 
@@ -120,6 +121,8 @@ TEST(Relay, RelayModel2) {
                               TensorType({1, 3, 64, 64},
                                          DataType::Float(32)));
     relay::Expr output = BuildConvBNRelu(x, 3, 16, 1, 1, 1, 1, 3);
+    auto expr = Downcast<relay::Call>(output)->op.as<GlobalVarNode>();
+    ASSERT_TRUE(expr == nullptr);
     relay::Function foo = relay::Function(relay::FreeVars(output), output, relay::Type(), {});
     IRModule mod = IRModule::FromExpr(foo);
     std::string result = relay::AsText(mod, false);
