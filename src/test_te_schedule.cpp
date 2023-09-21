@@ -195,6 +195,9 @@ TEST(TESchedule, ComputeInline) {
         return B(i) * 2;
     });
     auto sch = te::create_schedule(Array<te::Operation>{C->op});
+    LOG_INFO << "Print schedule before compute inline:";
+    std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, C}, "main", {}, GlobalVarSupply(NameSupply("")), true)
+              << std::endl;
     sch[B].compute_inline();
     LOG_INFO << "Print schedule after compute inline:";
     std::cout << LowerSchedule(sch, Array<te::Tensor>{A, B, C}, "main", {}, GlobalVarSupply(NameSupply("")), true)
