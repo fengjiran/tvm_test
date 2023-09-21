@@ -91,3 +91,7 @@ TEST(DP, CoinChange2) {
     ASSERT_EQ(coin_change({2}, 3), -1);
     ASSERT_EQ(coin_change({1}, 0), 0);
 }
+
+TEST(DP, bag) {
+    //
+}
