@@ -25,4 +25,7 @@ TEST(IR, NameSupply) {
     name_supply->ReserveName("test", true);
     ASSERT_TRUE(name_supply->ContainsName("test"));
     ASSERT_EQ(name_supply->FreshName("test"), "dog_test_1");
+    ASSERT_TRUE(name_supply->ContainsName("test_1"));
+    ASSERT_FALSE(name_supply->ContainsName("test_1", false));
+    ASSERT_FALSE(name_supply->ContainsName("test_2"));
 }
