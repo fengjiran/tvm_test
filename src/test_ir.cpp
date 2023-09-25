@@ -24,4 +24,5 @@ TEST(IR, NameSupply) {
     auto name_supply = NameSupply(prefix, name_map);
     name_supply->ReserveName("test", true);
     ASSERT_TRUE(name_supply->ContainsName("test"));
+    ASSERT_EQ(name_supply->FreshName("test"), "dog_test_1");
 }
