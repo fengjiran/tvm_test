@@ -140,3 +140,23 @@ TEST(Array, findMedianSortedArrays) {
     ASSERT_DOUBLE_EQ(findMedianSortedArrays({1, 3}, {2}), 2.0);
     ASSERT_DOUBLE_EQ(findMedianSortedArrays({1, 2}, {3, 4}), 2.5);
 }
+
+TEST(Array, maxArea) {
+    auto maxArea = [](const std::vector<int> &height) {
+        int left = 0;
+        int right = height.size() - 1;
+        int area = 0;
+        while (left < right) {
+            int cur_area = std::min(height[left], height[right]) * (right - left);
+            area = std::max(area, cur_area);
+            if (height[left] < height[right]) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+        return area;
+    };
+
+    ASSERT_EQ(maxArea({1, 8, 6, 2, 5, 4, 8, 3, 7}), 49);
+}
