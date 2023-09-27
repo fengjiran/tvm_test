@@ -97,7 +97,46 @@ TEST(DP, bag) {
 }
 
 TEST(Array, findMedianSortedArrays) {
-    auto findMedianSortedArrays = [](std::vector<int>& nums1, std::vector<int>& nums2) {
-        //
+    auto findMedianSortedArrays = [](const std::vector<int> &nums1,
+                                     const std::vector<int> &nums2) {
+        int m = nums1.size();
+        int n = nums2.size();
+        int p1 = 0;
+        int p2 = 0;
+        std::vector<int> res;
+
+        while (p1 < m && p2 < n) {
+            if (nums1[p1] < nums2[p2]) {
+                res.push_back(nums1[p1]);
+                p1++;
+            } else {
+                res.push_back(nums2[p2]);
+                p2++;
+            }
+        }
+
+        if (p1 == m) {
+            while (p2 < n) {
+                res.push_back(nums2[p2]);
+                p2++;
+            }
+        }
+
+        if (p2 == n) {
+            while (p1 < m) {
+                res.push_back(nums1[p1]);
+                p1++;
+            }
+        }
+
+        double mid;
+        if ((m + n) % 2 == 0) {
+            mid = (res[(m + n - 2) / 2] + res[(m + n) / 2]) / 2.0;
+        } else {
+            mid = res[(m + n - 1) / 2];
+        }
+        return mid;
     };
+    ASSERT_DOUBLE_EQ(findMedianSortedArrays({1, 3}, {2}), 2.0);
+    ASSERT_DOUBLE_EQ(findMedianSortedArrays({1, 2}, {3, 4}), 2.5);
 }
