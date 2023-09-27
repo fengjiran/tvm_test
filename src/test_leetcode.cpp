@@ -163,5 +163,40 @@ TEST(Array, maxArea) {
 }
 
 TEST(Array, threeSumClosest) {
-    //
+    auto twoSumClosest = [](const std::vector<int> &nums, int start, int target) {
+        int low = start;
+        int high = nums.size() - 1;
+        int delta = std::numeric_limits<int>::max();
+        while (low < high) {
+            int sum = nums[low] + nums[high];
+            if (std::abs(target - sum) < std::abs(delta)) {
+                delta = target - sum;
+            }
+
+            if (sum < target) {
+                low++;
+            } else {
+                high--;
+            }
+        }
+        return target - delta;
+    };
+
+    auto threeSumClosest = [&twoSumClosest](std::vector<int> &nums, int target) {
+        std::sort(nums.begin(), nums.end());
+        int delta = std::numeric_limits<int>::max();
+        for (int i = 0; i < nums.size() - 2; i++) {
+            int sum = twoSumClosest(nums, i + 1, target - nums[i]) + nums[i];
+            if (std::abs(target - sum) < std::abs(delta)) {
+                delta = target - sum;
+            }
+        }
+        return target - delta;
+    };
+
+    std::vector<int> nums1{-1, 2, 1, -4};
+    std::vector<int> nums2{0, 0, 0};
+
+    ASSERT_EQ(threeSumClosest(nums1, 1), 2);
+    ASSERT_EQ(threeSumClosest(nums2, 1), 0);
 }
