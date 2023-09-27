@@ -159,4 +159,5 @@ TEST(Array, maxArea) {
     };
 
     ASSERT_EQ(maxArea({1, 8, 6, 2, 5, 4, 8, 3, 7}), 49);
+    ASSERT_EQ(maxArea({1, 1}), 1);
 }
