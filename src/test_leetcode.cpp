@@ -95,3 +95,9 @@ TEST(DP, CoinChange2) {
 TEST(DP, bag) {
     //
 }
+
+TEST(Array, findMedianSortedArrays) {
+    auto findMedianSortedArrays = [](std::vector<int>& nums1, std::vector<int>& nums2) {
+        //
+    };
+}
