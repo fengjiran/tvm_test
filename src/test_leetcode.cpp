@@ -267,5 +267,35 @@ TEST(Array, 4sum) {
 }
 
 TEST(Array, removeDuplicates) {
-    //
+    auto removeDuplicates = [](std::vector<int> &nums) {
+        int length = nums.size();
+        int slow = 0;
+        int fast = 0;
+        while (fast < length) {
+            if (nums[slow] != nums[fast]) {
+                nums[++slow] = nums[fast];
+            }
+            fast++;
+        }
+        return slow + 1;
+    };
+
+    std::vector<int> nums1{1, 1, 2};
+    std::vector<int> nums2{0, 0, 1, 1, 1, 2, 2, 3, 3, 4};
+    int k1 = removeDuplicates(nums1);
+    int k2 = removeDuplicates(nums2);
+
+    ASSERT_EQ(k1, 2);
+    ASSERT_EQ(k2, 5);
+
+    std::vector<int> expected1{1, 2};
+    std::vector<int> expected2{0, 1, 2, 3, 4};
+
+    for (int i = 0; i < k1; i++) {
+        ASSERT_EQ(nums1[i], expected1[i]);
+    }
+
+    for (int i = 0; i < k2; i++) {
+        ASSERT_EQ(nums2[i], expected2[i]);
+    }
 }
