@@ -200,3 +200,7 @@ TEST(Array, threeSumClosest) {
     ASSERT_EQ(threeSumClosest(nums1, 1), 2);
     ASSERT_EQ(threeSumClosest(nums2, 1), 0);
 }
+
+TEST(Array, 4sum) {
+    //
+}
