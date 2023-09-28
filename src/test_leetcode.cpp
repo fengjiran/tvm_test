@@ -202,5 +202,69 @@ TEST(Array, threeSumClosest) {
 }
 
 TEST(Array, 4sum) {
-    //
+    auto twoSum = [](std::vector<int> &nums, int start, long target) {
+        int low = start;
+        int high = nums.size() - 1;
+        std::vector<std::vector<int>> res;
+        while (low < high) {
+            int left = nums[low];
+            int right = nums[high];
+            int sum = left + right;
+            if (sum < target) {
+                while (low < high && nums[low] == left) {
+                    low++;
+                }
+            } else if (sum > target) {
+                while (low < high && nums[high] == right) {
+                    high--;
+                }
+            } else {
+                res.push_back({left, right});
+                while (low < high && nums[low] == left) {
+                    low++;
+                }
+
+                while (low < high && nums[high] == right) {
+                    high--;
+                }
+            }
+        }
+        return res;
+    };
+
+    auto threeSum = [&twoSum](std::vector<int> &nums, int start, long target) {
+        int n = nums.size();
+        std::vector<std::vector<int>> res;
+        for (int i = start; i < n; i++) {
+            auto tuples = twoSum(nums, i + 1, target - nums[i]);
+            for (auto &tuple: tuples) {
+                tuple.push_back(nums[i]);
+                res.push_back(tuple);
+            }
+            while (i < n - 1 && nums[i] == nums[i + 1]) {
+                i++;
+            }
+        }
+        return res;
+    };
+
+    auto fourSum = [&threeSum](std::vector<int> &nums, int target) {
+        std::sort(nums.begin(), nums.end());
+        int n = nums.size();
+        std::vector<std::vector<int>> res;
+        for (int i = 0; i < n; i++) {
+            auto tuples = threeSum(nums, i + 1, target - nums[i]);
+            for (auto &tuple: tuples) {
+                tuple.push_back(nums[i]);
+                res.push_back(tuple);
+            }
+            while (i < n - 1 && nums[i] == nums[i + 1]) {
+                i++;
+            }
+        }
+        return res;
+    };
+
+
+
 }
