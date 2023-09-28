@@ -307,3 +307,51 @@ TEST(Array, swap) {
     ASSERT_EQ(a, 2);
     ASSERT_EQ(b, 1);
 }
+
+TEST(Array, nextPermutation) {
+    auto nextPernutation = [](std::vector<int> &nums) {
+        int length = nums.size();
+        if (length == 1) {
+            return;
+        }
+
+        int i = length - 2;
+        while (i >= 0) {
+            if (nums[i] < nums[i + 1]) {
+                break;
+            }
+            i--;
+        }
+        if (i == 0) {
+            std::sort(nums.begin(), nums.end());
+            return;
+        }
+
+        for (int j = length - 1; j > i; j--) {
+            if (nums[j] > nums[i]) {
+                std::swap(nums[i], nums[j]);
+                break;
+            }
+        }
+
+        std::sort(nums.begin() + i + 1, nums.end());
+    };
+
+    std::vector<int> nums1{1, 2, 3};
+    std::vector<int> nums2{3, 2, 1};
+    std::vector<int> nums3{1, 1, 5};
+
+    std::vector<int> expected1{1, 3, 2};
+    std::vector<int> expected2{1, 2, 3};
+    std::vector<int> expected3{1, 5, 1};
+
+    nextPernutation(nums1);
+    nextPernutation(nums2);
+    nextPernutation(nums3);
+
+    for (int i = 0; i < 3; i++) {
+        ASSERT_EQ(nums1[i], expected1[i]);
+        ASSERT_EQ(nums2[i], expected2[i]);
+        ASSERT_EQ(nums3[i], expected3[i]);
+    }
+}
