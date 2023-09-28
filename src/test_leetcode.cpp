@@ -299,3 +299,11 @@ TEST(Array, removeDuplicates) {
         ASSERT_EQ(nums2[i], expected2[i]);
     }
 }
+
+TEST(Array, swap) {
+    int a = 1;
+    int b = 2;
+    std::swap(a, b);
+    ASSERT_EQ(a, 2);
+    ASSERT_EQ(b, 1);
+}
