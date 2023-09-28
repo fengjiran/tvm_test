@@ -322,7 +322,7 @@ TEST(Array, nextPermutation) {
             }
             i--;
         }
-        if (i == 0) {
+        if (i == -1) {
             std::sort(nums.begin(), nums.end());
             return;
         }
