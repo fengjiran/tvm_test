@@ -264,7 +264,8 @@ TEST(Array, 4sum) {
         }
         return res;
     };
+}
 
-
-
+TEST(Array, removeDuplicates) {
+    //
 }
