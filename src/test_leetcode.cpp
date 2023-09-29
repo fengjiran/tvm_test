@@ -355,3 +355,9 @@ TEST(Array, nextPermutation) {
         ASSERT_EQ(nums3[i], expected3[i]);
     }
 }
+
+TEST(Array, SearchRotatedSortedArray) {
+    auto searchRotateSortedArray = [](std::vector<int> &nums, int target) {
+        //
+    };
+}
