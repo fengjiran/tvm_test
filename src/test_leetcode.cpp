@@ -395,3 +395,64 @@ TEST(Array, SearchRotatedSortedArray) {
     ASSERT_EQ(searchRotateSortedArray(nums4, 1), 0);
     ASSERT_EQ(searchRotateSortedArray(nums5, 2), -1);
 }
+
+TEST(Array, SearchRange) {
+    auto searchLeftBound = [](std::vector<int> &nums, int target) {
+        int left = 0;
+        int right = nums.size();
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (target == nums[mid]) {
+                right = mid;
+            } else if (target > nums[mid]) {
+                left = mid + 1;
+            } else if (target < nums[mid]) {
+                right = mid;
+            }
+        }
+        if (left == nums.size()) {
+            return -1;
+        }
+        return nums[left] == target ? left : -1;
+    };
+
+    auto searchRightBound = [](std::vector<int> &nums, int target) {
+        int left = 0;
+        int right = nums.size();
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (target == nums[mid]) {
+                left = mid + 1;
+            } else if (target > nums[mid]) {
+                left = mid + 1;
+            } else if (target < nums[mid]) {
+                right = mid;
+            }
+        }
+        if (left - 1 < 0) {
+            return -1;
+        }
+
+        return nums[left - 1] == target ? (left - 1) : -1;
+    };
+
+    auto searchRange = [&](std::vector<int> &nums, int target) {
+        int left_bound = searchLeftBound(nums, target);
+        int right_bound = searchRightBound(nums, target);
+        std::vector<int> res{left_bound, right_bound};
+        return res;
+    };
+
+    std::vector<int> nums1{5, 7, 7, 8, 8, 10};
+    std::vector<int> nums2{5, 7, 7, 8, 8, 10};
+    std::vector<int> nums3;
+
+    ASSERT_EQ(searchLeftBound(nums1, 8), 3);
+    ASSERT_EQ(searchRightBound(nums1, 8), 4);
+
+    ASSERT_EQ(searchLeftBound(nums2, 6), -1);
+    ASSERT_EQ(searchRightBound(nums2, 6), -1);
+
+    ASSERT_EQ(searchLeftBound(nums3, 0), -1);
+    ASSERT_EQ(searchRightBound(nums3, 0), -1);
+}
