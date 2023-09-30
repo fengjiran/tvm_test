@@ -436,13 +436,6 @@ TEST(Array, SearchRange) {
         return nums[left - 1] == target ? (left - 1) : -1;
     };
 
-    auto searchRange = [&](std::vector<int> &nums, int target) {
-        int left_bound = searchLeftBound(nums, target);
-        int right_bound = searchRightBound(nums, target);
-        std::vector<int> res{left_bound, right_bound};
-        return res;
-    };
-
     std::vector<int> nums1{5, 7, 7, 8, 8, 10};
     std::vector<int> nums2{5, 7, 7, 8, 8, 10};
     std::vector<int> nums3;
@@ -458,5 +451,28 @@ TEST(Array, SearchRange) {
 }
 
 TEST(Array, validSudoku) {
-    //
+    auto isValidSudoku = [](std::vector<std::vector<char>> &board) {
+        std::vector<std::vector<bool>> rows(9, std::vector<bool>(9, false));
+        std::vector<std::vector<bool>> cols(9, std::vector<bool>(9, false));
+        std::vector<std::vector<bool>> subBlocks(9, std::vector<bool>(9, false));
+
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                char c = board[i][j];
+                if (c == '.') {
+                    continue;
+                }
+
+                int value = c - '0' - 1;
+                if (rows[i][value] || cols[j][value] || subBlocks[i / 3 * 3 + j / 3][value]) {
+                    return false;
+                }
+
+                rows[i][value] = true;
+                cols[j][value] = true;
+                subBlocks[i / 3 * 3 + j / 3][value] = true;
+            }
+        }
+        return true;
+    };
 }
