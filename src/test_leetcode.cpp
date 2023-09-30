@@ -456,3 +456,7 @@ TEST(Array, SearchRange) {
     ASSERT_EQ(searchLeftBound(nums3, 0), -1);
     ASSERT_EQ(searchRightBound(nums3, 0), -1);
 }
+
+TEST(Array, validSudoku) {
+    //
+}
