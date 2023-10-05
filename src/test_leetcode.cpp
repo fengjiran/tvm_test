@@ -477,6 +477,29 @@ TEST(Array, validSudoku) {
     };
 }
 
-TEST(Array, Subsets1) {
-    //
+TEST(Array, TrapRainWater) {
+    auto trap_rain_water = [](std::vector<int> &height) {
+        int left = 0;
+        int right = height.size() - 1;
+        int lmax = 0;
+        int rmax = 0;
+        int res = 0;
+        while (left < right) {
+            lmax = std::max(lmax, height[left]);
+            rmax = std::max(rmax, height[right]);
+            if (lmax < rmax) {
+                res += lmax - height[left];
+                left++;
+            } else {
+                res += rmax - height[right];
+                right--;
+            }
+        }
+        return res;
+    };
+
+    std::vector<int> height1{0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1};
+    std::vector<int> height2{4, 2, 0, 3, 2, 5};
+    ASSERT_EQ(trap_rain_water(height1), 6);
+    ASSERT_EQ(trap_rain_water(height2), 9);
 }
