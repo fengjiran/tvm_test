@@ -503,3 +503,9 @@ TEST(Array, TrapRainWater) {
     ASSERT_EQ(trap_rain_water(height1), 6);
     ASSERT_EQ(trap_rain_water(height2), 9);
 }
+
+TEST(Array, JumpGame) {
+    auto jump_game = [](std::vector<int>& nums) {
+        //
+    };
+}
