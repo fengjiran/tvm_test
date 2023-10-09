@@ -505,7 +505,22 @@ TEST(Array, TrapRainWater) {
 }
 
 TEST(Array, JumpGame) {
-    auto jump_game = [](std::vector<int>& nums) {
-        //
+    auto jump_game = [](std::vector<int> &nums) {
+        int farthest = 0;
+        int end = 0;
+        int jumps = 0;
+        for (int i = 0; i < nums.size() - 1; i++) {
+            farthest = std::max(farthest, i + nums[i]);
+            if (end == i) {
+                jumps++;
+                end = farthest;
+            }
+        }
+        return jumps;
     };
+
+    std::vector<int> nums1{2, 3, 1, 1, 4};
+    std::vector<int> nums2{2, 3, 0, 1, 4};
+    ASSERT_EQ(jump_game(nums1), 2);
+    ASSERT_EQ(jump_game(nums2), 2);
 }
