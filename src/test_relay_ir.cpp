@@ -74,8 +74,9 @@ TEST(Relay, ConstantExpr) {
     const PackedFunc *make_relu = runtime::Registry::Get("relay.op.nn._make.relu");
     relay::Call call_relu1 = (*make_relu)(const1);
     relay::Call call_relu2 = (*make_relu)(const1);
-    std::cout << "relu1 op addr: " << &call_relu1->op << std::endl;
-    std::cout << "relu2 op addr: " << &call_relu2->op << std::endl;
+    ASSERT_TRUE(call_relu1->op.same_as(call_relu2->op));
+//    std::cout << "relu1 op addr: " << &call_relu1->op << std::endl;
+//    std::cout << "relu2 op addr: " << &call_relu2->op << std::endl;
     delete[] static_cast<int32_t *>(const1->data->data);
 }
 
