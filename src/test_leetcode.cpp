@@ -526,5 +526,39 @@ TEST(Array, JumpGame) {
 }
 
 TEST(Backtrack, RestoreIPAddresses) {
-    //
+    std::string cur;
+    std::vector<std::string> res;
+    using FType = void(std::string &, int, int);
+    auto restore_ip_addresses = [](std::string &s) {
+        //
+    };
+
+    std::function<void(std::string &, int, int)> backtrack = [&](std::string &s, int start, int segment) {
+        if (segment > 4) {
+            cur.erase(cur.size() - 1);
+            res.push_back(cur);
+            return;
+        }
+
+        int len = s.size() - start - 1 >= 3 ? 3 : s.size() - start - 1;
+        if (segment == 4 && s.size() - start - 1 > 3) {
+            return;
+        }
+
+        for (int i = 1; i <= len; i++) {
+            std::string t = s.substr(start, i);
+            if (i > 1 && t[0] == '0') {
+                break;
+            }
+            if (i == 3 && stoi(t) > 255) {
+                continue;
+            }
+
+            t += '.';
+            int n = cur.size();
+            cur += t;
+            backtrack(s, start + i, segment + 1);
+            cur.erase(n, t.size());
+        }
+    };
 }
