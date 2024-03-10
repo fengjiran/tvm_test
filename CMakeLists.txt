@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.18)
 project(tvm_test)
 set(CMAKE_CXX_STANDARD 17)
 
+list(APPEND CMAKE_PREFIX_PATH "/opt/anaconda3/envs/dl/lib/python3.8/site-packages/torch/share/cmake")
+find_package(Torch REQUIRED)
+message(STATUS ${TORCH_LIBRARIES})
+message(STATUS ${TORCH_INCLUDE_DIRS})
+
 IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
     message(STATUS "Current Platform: Linux ")
     set(TVM_INCLUDE /home/richard/project/tvm_fork/tvm/include)
